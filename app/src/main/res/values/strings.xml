@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">NeWork</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="posts">Posts</string>
+    <string name="events">Events</string>
+    <string name="users">Users</string>
+    <string name="button_new_post">new post</string>
+    <string name="button_new_event">new event</string>
+    <string name="author_avatar_image">author avatar image</string>
+    <string name="text_post">Привет, друзья! Хочу поделиться с вами своими мыслями о том, что для меня означает быть профессиональным писателем. Эта профессия - это не только способ заработка, но и настоящее призвание, к которому я стремился многие годы. Каждый новый текст - это возможность выразить свои мысли, эмоции и вдохнуть жизнь в созданных персонажей. Я готов обмениваться опытом и учиться у талантливых коллег, искренне благодарен всем моим читателям за поддержку и вдохновение!</string>
+    <string name="image_content">image content</string>
+    <string name="button_like">like</string>
+    <string name="button_share">share</string>
+    <string name="menu_option">menu option</string>
+</resources>
