@@ -21,6 +21,8 @@ class PostsFragment : Fragment() {
     ): View {
         binding = FragmentPostsBinding.inflate(inflater, container, false)
 
+        postViewModel
+
         return binding.root
     }
 

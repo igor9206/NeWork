@@ -64,6 +64,8 @@ dependencies {
     val retrofitVersion = "2.9.0"
     val okhttpVersion = "4.12.0"
     val coroutineVersion = "1.7.3"
+    val roomVersion = "2.6.1"
+    val pagingVersion = "3.2.1"
 
     implementation("androidx.activity:activity-ktx:$activityKtxVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
@@ -78,6 +80,10 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
     implementation("com.squareup.okhttp3:logging-interceptor:$okhttpVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion")
+    implementation("androidx.room:room-runtime:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-paging:$roomVersion")
+    implementation("androidx.paging:paging-runtime-ktx:$pagingVersion")
 
 
     implementation("androidx.core:core-ktx:1.12.0")

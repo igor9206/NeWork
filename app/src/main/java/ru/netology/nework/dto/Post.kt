@@ -4,18 +4,18 @@ data class Post(
     val id: Int,
     val authorId: Int,
     val author: String,
-    val authorJob: String,
-    val authorAvatar: String,
+    val authorJob: String?,
+    val authorAvatar: String?,
     val content: String,
     val published: String,
-    val coords: Coords,
-    val link: String,
-    val mentionIds: List<Int>,
-    val mentionedMe: Boolean,
-    val likeOwnerIds: List<Int>,
-    val likedByMe: Boolean,
-    val attachment: Attachment,
-    val users: Map<String, User>
+//    val coords: Coords?,
+//    val link: String?,
+//    val mentionIds: List<Int>,
+//    val mentionedMe: Boolean,
+//    val likeOwnerIds: List<Int>,
+//    val likedByMe: Boolean,
+//    val attachment: Attachment?,
+//    val users: Map<String, User>
 )
 
 data class Coords(
