@@ -1,7 +1,7 @@
 package ru.netology.nework.dto
 
 data class Post(
-    val id: Int,
+    val id: Long,
     val authorId: Int,
     val author: String,
     val authorJob: String?,

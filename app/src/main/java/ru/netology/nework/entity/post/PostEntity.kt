@@ -1,19 +1,13 @@
-package ru.netology.nework.entity
+package ru.netology.nework.entity.post
 
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import com.google.gson.Gson
-import ru.netology.nework.dto.Attachment
-import ru.netology.nework.dto.Coords
 import ru.netology.nework.dto.Post
-import ru.netology.nework.dto.User
 
 @Entity(tableName = "posts")
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Long,
     val authorId: Int,
     val author: String,
     val authorJob: String?,
@@ -70,8 +64,8 @@ data class PostEntity(
     }
 }
 
-//fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
-//fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity::fromDto)
+fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
+fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity.Companion::fromDto)
 //
 //class CoordsConverter {
 //    private val gson = Gson()

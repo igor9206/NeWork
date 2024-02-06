@@ -15,7 +15,7 @@ class PostAdapter : PagingDataAdapter<Post, PostViewHolder>(PostDiffCallBack()) 
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val post = getItem(position)
+        val post = getItem(position) ?: return
         holder.bind(post)
     }
 }
@@ -23,8 +23,10 @@ class PostAdapter : PagingDataAdapter<Post, PostViewHolder>(PostDiffCallBack()) 
 class PostViewHolder(
     private val binding: CardPostBinding
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(post: Post?) {
-        binding.authorName.text = post?.author
+    fun bind(post: Post) {
+        binding.authorName.text = post.author
+        binding.datePublication.text = post.published
+        binding.content.text = post.content
     }
 }
 
