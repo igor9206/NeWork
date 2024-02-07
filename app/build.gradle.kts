@@ -67,6 +67,7 @@ dependencies {
     val roomVersion = "2.6.1"
     val pagingVersion = "3.2.1"
     val swipeRefreshLayoutVersion = "1.2.0-alpha01"
+    val imagePickerVersion = "2.1"
 
     implementation("androidx.activity:activity-ktx:$activityKtxVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
@@ -87,6 +88,7 @@ dependencies {
     implementation("androidx.room:room-paging:$roomVersion")
     implementation("androidx.paging:paging-runtime-ktx:$pagingVersion")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefreshLayoutVersion")
+    implementation("com.github.dhaval2404:imagepicker:$imagePickerVersion")
 
 
     implementation("androidx.core:core-ktx:1.12.0")

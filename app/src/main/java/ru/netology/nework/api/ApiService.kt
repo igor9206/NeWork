@@ -1,10 +1,13 @@
 package ru.netology.nework.api
 
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.netology.nework.dto.AuthItem
@@ -30,6 +33,15 @@ interface ApiService {
         @Field("login") login: String,
         @Field("pass") pass: String,
         @Field("name") name: String
+    ): Response<AuthItem>
+
+    @Multipart
+    @POST("api/users/registration")
+    suspend fun registrationWithPhoto(
+        @Query("login") login: String,
+        @Query("pass") pass: String,
+        @Query("name") name: String,
+        @Part file: MultipartBody.Part
     ): Response<AuthItem>
 
     @FormUrlEncoded

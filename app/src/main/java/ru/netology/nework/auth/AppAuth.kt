@@ -6,8 +6,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.nework.R
 import ru.netology.nework.api.ApiService
+import ru.netology.nework.model.PhotoModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,7 +29,7 @@ class AppAuth @Inject constructor(
 
     private val idKey = "id"
     private val tokenKey = "token"
-    private val _authState = MutableStateFlow<AuthState>(
+    private val _authState = MutableStateFlow(
         AuthState(
             prefs.getLong(idKey, 0L),
             prefs.getString(tokenKey, null)
@@ -54,9 +57,19 @@ class AppAuth @Inject constructor(
         }
     }
 
-    suspend fun register(login: String, name: String, pass: String) {
+    suspend fun register(login: String, name: String, pass: String, photo: PhotoModel?) {
         try {
-            val response = apiService.registration(login, pass, name)
+            val response = if (photo != null) {
+                val part = MultipartBody.Part.createFormData(
+                    "file",
+                    photo.file.name,
+                    photo.file.asRequestBody()
+                )
+                apiService.registrationWithPhoto(login, pass, name, part)
+            } else {
+                apiService.registration(login, pass, name)
+            }
+
             if (!response.isSuccessful) {
                 when (response.code()) {
                     403 -> {

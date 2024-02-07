@@ -1,6 +1,8 @@
 package ru.netology.nework.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -9,6 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.netology.nework.auth.AppAuth
 import ru.netology.nework.auth.AuthState
+import ru.netology.nework.model.PhotoModel
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,9 +22,14 @@ class AuthViewModel @Inject constructor(
 
     val data: LiveData<AuthState> = appAuth.authState.asLiveData(Dispatchers.Default)
 
+    private val _photoData: MutableLiveData<PhotoModel?> = MutableLiveData(null)
+    val photoData: LiveData<PhotoModel?>
+        get() = _photoData
+
     fun register(login: String, name: String, pass: String) {
         viewModelScope.launch {
-            appAuth.register(login, name, pass)
+            val photo = _photoData.value
+            appAuth.register(login, name, pass, photo)
         }
     }
 
@@ -28,5 +37,9 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             appAuth.login(login, pass)
         }
+    }
+
+    fun setPhoto(uri: Uri, file: File) {
+        _photoData.value = PhotoModel(uri, file)
     }
 }
