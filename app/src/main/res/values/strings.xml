@@ -12,4 +12,15 @@
     <string name="button_like">like</string>
     <string name="button_share">share</string>
     <string name="menu_option">menu option</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="don_t_have_an_account_register">Don\'t have an account? Register</string>
+    <string name="registration">Registration</string>
+    <string name="name">Name</string>
+    <string name="passwords_dont_match">passwords don\'t match</string>
+    <string name="the_user_is_already_registered">The user is already registered</string>
+    <string name="incorrect_photo_format">Incorrect photo format</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="incorrect_password">Incorrect password</string>
+    <string name="user_unregistered">User is unregistered</string>
 </resources>

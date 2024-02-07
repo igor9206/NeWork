@@ -14,18 +14,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nework.adapter.PostAdapter
-import ru.netology.nework.api.ApiService
 import ru.netology.nework.databinding.FragmentPostsBinding
 import ru.netology.nework.viewmodel.PostViewModel
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class PostsFragment : Fragment() {
     private lateinit var binding: FragmentPostsBinding
     private val postViewModel: PostViewModel by viewModels()
-
-    @Inject
-    lateinit var apiService: ApiService
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
