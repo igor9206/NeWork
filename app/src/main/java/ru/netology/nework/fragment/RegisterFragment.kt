@@ -90,9 +90,6 @@ class RegisterFragment : Fragment() {
 
         authViewModel.data.observe(viewLifecycleOwner) { state ->
             val token = state.token.toString()
-            if (state.id != 0L && token.isNotEmpty()) {
-                findNavController().navigate(R.id.mainFragment)
-            }
         }
 
         return binding.root

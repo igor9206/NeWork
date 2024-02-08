@@ -29,11 +29,15 @@ class LoginFragment : Fragment() {
 
             authViewModel.login(login, pass)
         }
+        binding.buttonRegister.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        }
 
         authViewModel.data.observe(viewLifecycleOwner) { state ->
             val token = state.token.toString()
+
             if (state.id != 0L && token.isNotEmpty()) {
-                findNavController().navigate(R.id.mainFragment)
+                findNavController().navigateUp()
             }
         }
 
