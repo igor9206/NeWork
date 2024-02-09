@@ -57,7 +57,7 @@ kapt {
 dependencies {
     val activityKtxVersion = "1.8.2"
     val fragmentVersion = "1.6.2"
-    val navVersion = "2.7.6"
+    val navVersion = "2.7.7"
     val recyclerViewVersion = "1.3.2"
     val hiltVersion = "2.50"
     val gsonVersion = "2.10.1"
@@ -69,6 +69,8 @@ dependencies {
     val swipeRefreshLayoutVersion = "1.2.0-alpha01"
     val imagePickerVersion = "2.1"
     val constraintLayoutVersion = "2.2.0-alpha13"
+    val glideVersion = "4.16.0"
+    val exoPlayerVersion = "1.2.1"
 
     implementation("androidx.activity:activity-ktx:$activityKtxVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
@@ -91,6 +93,10 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefreshLayoutVersion")
     implementation("com.github.dhaval2404:imagepicker:$imagePickerVersion")
     implementation("androidx.constraintlayout:constraintlayout:$constraintLayoutVersion")
+    implementation("com.github.bumptech.glide:glide:$glideVersion")
+    implementation("androidx.media3:media3-exoplayer:$exoPlayerVersion")
+    implementation("androidx.media3:media3-exoplayer-dash:$exoPlayerVersion")
+    implementation("androidx.media3:media3-ui:$exoPlayerVersion")
 
 
     implementation("androidx.core:core-ktx:1.12.0")

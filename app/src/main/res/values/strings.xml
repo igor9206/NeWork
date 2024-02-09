@@ -26,4 +26,6 @@
     <string name="user">user</string>
     <string name="wall">Wall</string>
     <string name="jobs">Jobs</string>
+    <string name="delete">delete</string>
+    <string name="edit">edit</string>
 </resources>

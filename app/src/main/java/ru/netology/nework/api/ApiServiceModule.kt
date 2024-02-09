@@ -1,5 +1,9 @@
 package ru.netology.nework.api
 
+import com.google.gson.GsonBuilder
+import com.google.gson.TypeAdapter
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,6 +13,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import ru.netology.nework.BuildConfig
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -34,8 +41,25 @@ class ApiServiceModule {
     fun provideRetrofit(
         okHttpClient: OkHttpClient
     ): Retrofit = Retrofit.Builder()
+        .addConverterFactory(
+            GsonConverterFactory.create(
+                GsonBuilder().registerTypeAdapter(
+                    OffsetDateTime::class.java,
+                    object : TypeAdapter<OffsetDateTime>() {
+                        override fun write(out: JsonWriter?, value: OffsetDateTime?) {
+                            out?.value(value?.toEpochSecond())
+                        }
+
+                        override fun read(`in`: JsonReader): OffsetDateTime {
+                            return OffsetDateTime.ofInstant(
+                                Instant.parse(`in`.nextString()),
+                                ZoneId.systemDefault()
+                            )
+                        }
+                    }).create()
+            )
+        )
         .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
         .client(okHttpClient)
         .build()
 

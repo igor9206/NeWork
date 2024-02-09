@@ -72,12 +72,12 @@
             <ImageView
                 android:id="@+id/imageContent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="250dp"
                 android:contentDescription="@string/image_content"
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/barrierTop" />
 
-            <VideoView
+            <androidx.media3.ui.PlayerView
                 android:id="@+id/videoContent"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"

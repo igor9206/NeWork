@@ -13,6 +13,7 @@ import androidx.paging.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.netology.nework.adapter.OnInteractionListener
 import ru.netology.nework.adapter.PostAdapter
 import ru.netology.nework.databinding.FragmentPostsBinding
 import ru.netology.nework.viewmodel.PostViewModel
@@ -28,7 +29,7 @@ class PostsFragment : Fragment() {
     ): View {
         binding = FragmentPostsBinding.inflate(inflater, container, false)
 
-        val postAdapter = PostAdapter()
+        val postAdapter = PostAdapter(object : OnInteractionListener {})
         binding.recyclerViewPost.adapter = postAdapter
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

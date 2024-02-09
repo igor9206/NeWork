@@ -94,6 +94,7 @@ class PostRemoteMediator(
 
             return MediatorResult.Success(body.isEmpty())
         } catch (e: Exception) {
+            println("1 + ${e.message}")
             return MediatorResult.Error(e)
         }
     }
