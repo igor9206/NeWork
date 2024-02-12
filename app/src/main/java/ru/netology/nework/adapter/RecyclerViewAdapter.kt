@@ -9,8 +9,11 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nework.R
+import ru.netology.nework.databinding.CardEventBinding
 import ru.netology.nework.databinding.CardPostBinding
 import ru.netology.nework.dto.AttachmentType
+import ru.netology.nework.dto.Event
+import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.extension.loadAvatar
@@ -19,17 +22,43 @@ import java.time.format.DateTimeFormatter
 interface OnInteractionListener {
 }
 
-class PostAdapter(
+class RecyclerViewAdapter(
     private val onInteractionListener: OnInteractionListener
-) : PagingDataAdapter<Post, PostViewHolder>(PostDiffCallBack()) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PostViewHolder(binding, onInteractionListener)
+) : PagingDataAdapter<FeedItem, RecyclerView.ViewHolder>(PostDiffCallBack()) {
+
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is Post -> R.layout.card_post
+            is Event -> R.layout.card_event
+            null -> error("unknown item type")
+        }
     }
 
-    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val post = getItem(position) ?: return
-        holder.bind(post)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            R.layout.card_post -> {
+                val binding =
+                    CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                PostViewHolder(binding, onInteractionListener)
+            }
+
+            R.layout.card_event -> {
+                val binding =
+                    CardEventBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                EventViewHolder(binding)
+            }
+
+            else -> error("unknown view type: $viewType")
+        }
+
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (val item = getItem(position)) {
+            is Post -> (holder as? PostViewHolder)?.bind(item)
+            is Event -> (holder as? EventViewHolder)?.bind(item)
+            null -> error("unknown view type")
+        }
     }
 }
 
@@ -76,12 +105,20 @@ class PostViewHolder(
     }
 }
 
-class PostDiffCallBack : DiffUtil.ItemCallback<Post>() {
-    override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
+class EventViewHolder(
+    private val binding: CardEventBinding
+) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(event: Event) {
+        binding.authorName.text = event.author
+    }
+}
+
+class PostDiffCallBack : DiffUtil.ItemCallback<FeedItem>() {
+    override fun areItemsTheSame(oldItem: FeedItem, newItem: FeedItem): Boolean {
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
+    override fun areContentsTheSame(oldItem: FeedItem, newItem: FeedItem): Boolean {
         return oldItem == newItem
     }
 

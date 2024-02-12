@@ -1,4 +1,4 @@
-package ru.netology.nework.dao
+package ru.netology.nework.dao.post
 
 import androidx.paging.PagingSource
 import androidx.room.Dao

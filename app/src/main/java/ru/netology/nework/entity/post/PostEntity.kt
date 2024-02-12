@@ -7,9 +7,9 @@ import androidx.room.TypeConverters
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import ru.netology.nework.dto.Attachment
-import ru.netology.nework.dto.Coords
+import ru.netology.nework.dto.Coordinates
 import ru.netology.nework.dto.Post
-import ru.netology.nework.dto.User
+import ru.netology.nework.dto.UserPreview
 import java.time.OffsetDateTime
 
 @Entity
@@ -22,20 +22,20 @@ import java.time.OffsetDateTime
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
-    val authorId: Int,
+    val authorId: Long,
     val author: String,
-    val authorJob: String?,
-    val authorAvatar: String?,
+    val authorJob: String? = null,
+    val authorAvatar: String? = null,
     val content: String,
     val published: String,
-    val coords: Coords? = null,
-    val link: String?,
-    val mentionIds: List<Int>,
+    val coords: Coordinates? = null,
+    val link: String? = null,
+    val mentionIds: List<Long>,
     val mentionedMe: Boolean,
-    val likeOwnerIds: List<Int>,
+    val likeOwnerIds: List<Long>,
     val likedByMe: Boolean,
     val attachment: Attachment? = null,
-    val users: Map<String, User>
+    val users: Map<String, UserPreview>
 ) {
     fun toDto() = Post(
         id,
@@ -83,27 +83,27 @@ class CoordsConverter {
     private val gson = Gson()
 
     @TypeConverter
-    fun fromCoords(coords: Coords?): String? {
+    fun fromCoords(coords: Coordinates?): String? {
         return if (coords != null) gson.toJson(coords) else null
     }
 
     @TypeConverter
-    fun toCoords(coords: String?): Coords? {
-        return if (coords != null) gson.fromJson(coords, Coords::class.java) else null
+    fun toCoords(coords: String?): Coordinates? {
+        return if (coords != null) gson.fromJson(coords, Coordinates::class.java) else null
     }
 }
 
 class MentionIdsConverter {
     private val gson = Gson()
-    private val typeToken = object : TypeToken<List<Int>>() {}.type
+    private val typeToken = object : TypeToken<List<Long>>() {}.type
 
     @TypeConverter
-    fun fromMentionIds(mentionIds: List<Int>?): String? {
+    fun fromMentionIds(mentionIds: List<Long>?): String? {
         return if (mentionIds != null) gson.toJson(mentionIds) else null
     }
 
     @TypeConverter
-    fun toMentionIds(mentionIds: String?): List<Int>? {
+    fun toMentionIds(mentionIds: String?): List<Long>? {
         return if (mentionIds != null) gson.fromJson(mentionIds, typeToken) else null
     }
 
@@ -128,15 +128,15 @@ class AttachmentConverter {
 
 class UsersConverter {
     private val gson = Gson()
-    private val typeToken = object : TypeToken<Map<String, User>>() {}.type
+    private val typeToken = object : TypeToken<Map<String, UserPreview>>() {}.type
 
     @TypeConverter
-    fun fromAttachment(users: Map<String, User>?): String? {
+    fun fromAttachment(users: Map<String, UserPreview>?): String? {
         return if (users != null) gson.toJson(users) else null
     }
 
     @TypeConverter
-    fun toAttachment(users: String?): Map<String, User>? {
+    fun toAttachment(users: String?): Map<String, UserPreview>? {
         return if (users != null) gson.fromJson(users, typeToken) else null
     }
 }

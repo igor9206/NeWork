@@ -9,12 +9,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.netology.nework.R
 import ru.netology.nework.adapter.OnInteractionListener
-import ru.netology.nework.adapter.PostAdapter
+import ru.netology.nework.adapter.RecyclerViewAdapter
 import ru.netology.nework.databinding.FragmentPostsBinding
 import ru.netology.nework.viewmodel.PostViewModel
 
@@ -29,7 +31,7 @@ class PostsFragment : Fragment() {
     ): View {
         binding = FragmentPostsBinding.inflate(inflater, container, false)
 
-        val postAdapter = PostAdapter(object : OnInteractionListener {})
+        val postAdapter = RecyclerViewAdapter(object : OnInteractionListener {})
         binding.recyclerViewPost.adapter = postAdapter
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -48,6 +50,11 @@ class PostsFragment : Fragment() {
 
         binding.swipeRefresh.setOnRefreshListener {
             postAdapter.refresh()
+        }
+
+        val parentNavController = parentFragment?.parentFragment?.findNavController()
+        binding.buttonNewPost.setOnClickListener {
+            parentNavController?.navigate(R.id.action_mainFragment_to_newPostFragment)
         }
 
         return binding.root

@@ -11,12 +11,15 @@ import ru.netology.nework.repository.Repository
 import javax.inject.Inject
 
 @HiltViewModel
-class PostViewModel @Inject constructor(
-    private val repository: Repository
+class EventViewModel @Inject constructor(
+    repository: Repository
 ) : ViewModel() {
-    val data: Flow<PagingData<FeedItem>> = repository.dataPost.map {
-        it.map { post->
-            post.copy()
+
+    val data: Flow<PagingData<FeedItem>> = repository.dataEvent.map {
+        it.map { event ->
+            event.copy()
         }
     }
+
+
 }

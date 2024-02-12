@@ -28,4 +28,7 @@
     <string name="jobs">Jobs</string>
     <string name="delete">delete</string>
     <string name="edit">edit</string>
+    <string name="save">save</string>
+    <string name="preview">preview</string>
+    <string name="remove">remove</string>
 </resources>

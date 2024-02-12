@@ -65,9 +65,9 @@ class AppAuth @Inject constructor(
                     photo.file.name,
                     photo.file.asRequestBody()
                 )
-                apiService.registrationWithPhoto(login, pass, name, part)
+                apiService.usersRegistrationWithPhoto(login, pass, name, part)
             } else {
-                apiService.registration(login, pass, name)
+                apiService.usersRegistration(login, pass, name)
             }
 
             if (!response.isSuccessful) {
@@ -94,7 +94,7 @@ class AppAuth @Inject constructor(
 
     suspend fun login(login: String, pass: String) {
         try {
-            val response = apiService.authentication(login, pass)
+            val response = apiService.usersAuthentication(login, pass)
             if (!response.isSuccessful) {
                 when (response.code()) {
                     400 -> {

@@ -6,41 +6,39 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import ru.netology.nework.api.ApiService
-import ru.netology.nework.dao.post.PostDao
-import ru.netology.nework.dao.post.PostRemoteKeyDao
+import ru.netology.nework.dao.event.EventDao
+import ru.netology.nework.dao.event.EventRemoteKeyDao
 import ru.netology.nework.db.AppDb
-import ru.netology.nework.entity.post.PostEntity
+import ru.netology.nework.entity.event.EventEntity
+import ru.netology.nework.entity.event.EventRemoteKeyEntity
+import ru.netology.nework.entity.event.toEntity
 import ru.netology.nework.entity.post.PostRemoteKeyEntity
-import ru.netology.nework.entity.post.toEntity
 
 @OptIn(ExperimentalPagingApi::class)
-class PostRemoteMediator(
+class EventRemoteMediator(
     private val apiService: ApiService,
     private val appDb: AppDb,
-    private val postDao: PostDao,
-    private val postRemoteKeyDao: PostRemoteKeyDao,
-) : RemoteMediator<Int, PostEntity>() {
+    private val eventDao: EventDao,
+    private val eventRemoteKeyDao: EventRemoteKeyDao,
+) : RemoteMediator<Int, EventEntity>() {
 
 
-    override suspend fun load(
-        loadType: LoadType,
-        state: PagingState<Int, PostEntity>
-    ): MediatorResult {
+    override suspend fun load(loadType: LoadType, state: PagingState<Int, EventEntity>): MediatorResult {
 
         try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    apiService.getLatestPage(state.config.pageSize)
+                    apiService.getLatestPageEvent(state.config.pageSize)
                 }
 
                 LoadType.PREPEND -> {
-                    val id = postRemoteKeyDao.max() ?: return MediatorResult.Success(false)
-                    apiService.getAfter(id, state.config.pageSize)
+                    val id = eventRemoteKeyDao.max() ?: return MediatorResult.Success(false)
+                    apiService.getAfterEvent(id, state.config.pageSize)
                 }
 
                 LoadType.APPEND -> {
-                    val id = postRemoteKeyDao.min() ?: return MediatorResult.Success(false)
-                    apiService.getBefore(id, state.config.pageSize)
+                    val id = eventRemoteKeyDao.min() ?: return MediatorResult.Success(false)
+                    apiService.getBeforeEvent(id, state.config.pageSize)
                 }
             }
 
@@ -54,25 +52,25 @@ class PostRemoteMediator(
             appDb.withTransaction {
                 when (loadType) {
                     LoadType.REFRESH -> {
-                        postRemoteKeyDao.clear()
-                        postRemoteKeyDao.insert(
+                        eventRemoteKeyDao.clear()
+                        eventRemoteKeyDao.insert(
                             listOf(
-                                PostRemoteKeyEntity(
+                                EventRemoteKeyEntity(
                                     PostRemoteKeyEntity.KeyType.AFTER,
                                     body.first().id
                                 ),
-                                PostRemoteKeyEntity(
+                                EventRemoteKeyEntity(
                                     PostRemoteKeyEntity.KeyType.BEFORE,
                                     body.last().id
                                 )
                             )
                         )
-                        postDao.clearAll()
+                        eventDao.clearAll()
                     }
 
                     LoadType.PREPEND -> {
-                        postRemoteKeyDao.insert(
-                            PostRemoteKeyEntity(
+                        eventRemoteKeyDao.insert(
+                            EventRemoteKeyEntity(
                                 PostRemoteKeyEntity.KeyType.AFTER,
                                 body.first().id
                             )
@@ -80,8 +78,8 @@ class PostRemoteMediator(
                     }
 
                     LoadType.APPEND -> {
-                        postRemoteKeyDao.insert(
-                            PostRemoteKeyEntity(
+                        eventRemoteKeyDao.insert(
+                            EventRemoteKeyEntity(
                                 PostRemoteKeyEntity.KeyType.BEFORE,
                                 body.last().id
                             )
@@ -89,7 +87,7 @@ class PostRemoteMediator(
                     }
                 }
 
-                postDao.insertAll(body.toEntity())
+                eventDao.insertAll(body.toEntity())
             }
 
             return MediatorResult.Success(body.isEmpty())
