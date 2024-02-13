@@ -2,16 +2,11 @@ package ru.netology.nework.entity.event
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import ru.netology.nework.entity.post.PostRemoteKeyEntity
+import ru.netology.nework.entity.KeyType
 
 @Entity
 data class EventRemoteKeyEntity(
     @PrimaryKey
-    val type: PostRemoteKeyEntity.KeyType,
+    val type: KeyType,
     val id: Long
-) {
-    enum class KeyType {
-        AFTER,
-        BEFORE
-    }
-}
+)

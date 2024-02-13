@@ -9,18 +9,21 @@ import ru.netology.nework.api.ApiService
 import ru.netology.nework.dao.post.PostDao
 import ru.netology.nework.dao.post.PostRemoteKeyDao
 import ru.netology.nework.db.AppDb
+import ru.netology.nework.entity.KeyType
 import ru.netology.nework.entity.post.PostEntity
 import ru.netology.nework.entity.post.PostRemoteKeyEntity
 import ru.netology.nework.entity.post.toEntity
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @OptIn(ExperimentalPagingApi::class)
-class PostRemoteMediator(
+@Singleton
+class PostRemoteMediator @Inject constructor(
     private val apiService: ApiService,
     private val appDb: AppDb,
     private val postDao: PostDao,
     private val postRemoteKeyDao: PostRemoteKeyDao,
 ) : RemoteMediator<Int, PostEntity>() {
-
 
     override suspend fun load(
         loadType: LoadType,
@@ -30,17 +33,17 @@ class PostRemoteMediator(
         try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    apiService.getLatestPage(state.config.pageSize)
+                    apiService.postsGetLatestPage(state.config.pageSize)
                 }
 
                 LoadType.PREPEND -> {
                     val id = postRemoteKeyDao.max() ?: return MediatorResult.Success(false)
-                    apiService.getAfter(id, state.config.pageSize)
+                    apiService.postsGetAfterPost(id, state.config.pageSize)
                 }
 
                 LoadType.APPEND -> {
                     val id = postRemoteKeyDao.min() ?: return MediatorResult.Success(false)
-                    apiService.getBefore(id, state.config.pageSize)
+                    apiService.postsGetBeforePost(id, state.config.pageSize)
                 }
             }
 
@@ -58,11 +61,11 @@ class PostRemoteMediator(
                         postRemoteKeyDao.insert(
                             listOf(
                                 PostRemoteKeyEntity(
-                                    PostRemoteKeyEntity.KeyType.AFTER,
+                                    KeyType.AFTER,
                                     body.first().id
                                 ),
                                 PostRemoteKeyEntity(
-                                    PostRemoteKeyEntity.KeyType.BEFORE,
+                                    KeyType.BEFORE,
                                     body.last().id
                                 )
                             )
@@ -73,7 +76,7 @@ class PostRemoteMediator(
                     LoadType.PREPEND -> {
                         postRemoteKeyDao.insert(
                             PostRemoteKeyEntity(
-                                PostRemoteKeyEntity.KeyType.AFTER,
+                                KeyType.AFTER,
                                 body.first().id
                             )
                         )
@@ -82,7 +85,7 @@ class PostRemoteMediator(
                     LoadType.APPEND -> {
                         postRemoteKeyDao.insert(
                             PostRemoteKeyEntity(
-                                PostRemoteKeyEntity.KeyType.BEFORE,
+                                KeyType.BEFORE,
                                 body.last().id
                             )
                         )

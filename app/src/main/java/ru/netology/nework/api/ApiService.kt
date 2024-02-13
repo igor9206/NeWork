@@ -2,6 +2,7 @@ package ru.netology.nework.api
 
 import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -11,7 +12,10 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import ru.netology.nework.dto.Comment
 import ru.netology.nework.dto.Event
+import ru.netology.nework.dto.Job
+import ru.netology.nework.dto.Media
 import ru.netology.nework.dto.Post
 import ru.netology.nework.dto.Token
 import ru.netology.nework.dto.UserResponse
@@ -137,7 +141,7 @@ interface ApiService {
     ): Response<Token>
 
     @GET("api/users")
-    suspend fun usersGetAllUser(): Response<UserResponse>
+    suspend fun usersGetAllUser(): Response<List<UserResponse>>
 
     @GET("api/users/{id}")
     suspend fun usersGetUser(
@@ -145,29 +149,169 @@ interface ApiService {
     ): Response<UserResponse>
 
     ////////////////////////////////////// POSTS ////////////////////////////////////////////////
-    @GET("api/posts/latest")
-    suspend fun getLatestPage(@Query("count") count: Int): Response<List<Post>>
+    @GET("api/posts")
+    suspend fun postsGetAllPost(): Response<List<Post>>
 
-    @GET("api/posts/{id}/after")
-    suspend fun getAfter(@Path("id") id: Long, @Query("count") count: Int): Response<List<Post>>
+    @POST("api/posts")
+    suspend fun postsSavePost(
+        @Body post: Post,
+    ): Response<Post>
+
+    @POST("api/posts/{id}/likes")
+    suspend fun postsLikePost(
+        @Path("id") id: Long,
+    ): Response<Post>
+
+    @DELETE("api/posts/{id}/likes")
+    suspend fun postsUnLikePost(
+        @Path("id") id: Long,
+    ): Response<Post>
+
+    @GET("api/posts/{id}/newer")
+    suspend fun postsGetNewerPost(@Path("id") id: Long): Response<List<Post>>
 
     @GET("api/posts/{id}/before")
-    suspend fun getBefore(@Path("id") id: Long, @Query("count") count: Int): Response<List<Post>>
-
-    // EVENT REQUEST
-    @GET("api/events/latest")
-    suspend fun getLatestPageEvent(@Query("count") count: Int): Response<List<Event>>
-
-    @GET("api/events/{id}/after")
-    suspend fun getAfterEvent(
+    suspend fun postsGetBeforePost(
         @Path("id") id: Long,
         @Query("count") count: Int
+    ): Response<List<Post>>
+
+    @GET("api/posts/{id}/after")
+    suspend fun postsGetAfterPost(
+        @Path("id") id: Long,
+        @Query("count") count: Int
+    ): Response<List<Post>>
+
+    @GET("api/post/{id}")
+    suspend fun postsGetPost(
+        @Path("id") id: Long,
+    ): Response<Post>
+
+    @DELETE("api/post/{id}")
+    suspend fun postsDeletePost(
+        @Path("id") id: Long,
+    ): Response<Unit>
+
+    @GET("api/posts/latest")
+    suspend fun postsGetLatestPage(@Query("count") count: Int): Response<List<Post>>
+
+    ////////////////////////////////////// COMMENTS ////////////////////////////////////////////
+    @GET("api/posts/{postId}/comments")
+    suspend fun commentsGetAllComment(
+        @Path("postId") postId: Long,
+    ): Response<List<Comment>>
+
+    @POST("api/posts/{postId}/comments")
+    suspend fun commentsSaveComment(
+        @Path("postId") postId: Long,
+        @Body comment: Comment
+    ): Response<Comment>
+
+    @POST("api/posts/{postId}/comments/{id}/likes")
+    suspend fun commentsLikeComment(
+        @Path("postId") postId: Long,
+        @Path("id") id: Long,
+    ): Response<Comment>
+
+    @DELETE("api/posts/{postId}/comments/{id}/likes")
+    suspend fun commentsUnLikeComment(
+        @Path("postId") postId: Long,
+        @Path("id") id: Long,
+    ): Response<Comment>
+
+    @DELETE("api/posts/{postId}/comments/{id}")
+    suspend fun commentsDeleteComment(
+        @Path("postId") postId: Long,
+        @Path("id") id: Long,
+    ): Response<Unit>
+
+    ///////////////////////////////////////  MYJOB  ////////////////////////////////////////
+    @GET("api/my/jobs")
+    suspend fun myJobGetAllJob(): Response<List<Job>>
+
+    @POST("api/my/jobs")
+    suspend fun myJobSaveJob(
+        @Body job: Job
+    ): Response<Job>
+
+    @DELETE("api/my/jobs/{id}")
+    suspend fun myJobDeleteJob(
+        @Path("id") id: Long,
+    ): Response<Unit>
+
+
+    ///////////////////////////////////////   MEDIA /////////////////////////////////////////
+
+    @Multipart
+    @POST("api/media")
+    suspend fun mediaSaveMedia(
+        @Part file: MultipartBody.Part
+    ): Response<Media>
+
+    ///////////////////////////////////////// EVENTS /////////////////////////////////////////
+    @GET("api/events")
+    suspend fun eventsGetAllEvent(): Response<List<Event>>
+
+    @POST("api/events")
+    suspend fun eventsSaveEvent(
+        @Body event: Event
+    ): Response<Event>
+
+    @POST("api/events/{id}/participants")
+    suspend fun eventsSaveParticipantsEvent(
+        @Path("id") id: Long,
+    ): Response<Event>
+
+    @DELETE("api/events/{id}/participants")
+    suspend fun eventsDeleteParticipantsEvent(
+        @Path("id") id: Long,
+    ): Response<Event>
+
+    @POST("api/events/{id}/likes")
+    suspend fun eventsLikeEvent(
+        @Path("id") id: Long,
+    ): Response<Event>
+
+    @DELETE("api/events/{id}/likes")
+    suspend fun eventsUnLikeEvent(
+        @Path("id") id: Long,
+    ): Response<Event>
+
+    @GET("api/events/{id}/newer")
+    suspend fun eventsGetNewerEvent(
+        @Path("id") id: Long,
     ): Response<List<Event>>
 
     @GET("api/events/{id}/before")
-    suspend fun getBeforeEvent(
+    suspend fun eventsGetBeforeEvent(
         @Path("id") id: Long,
         @Query("count") count: Int
     ): Response<List<Event>>
+
+    @GET("api/events/{id}/after")
+    suspend fun eventsGetAfterEvent(
+        @Path("id") id: Long,
+        @Query("count") count: Int
+    ): Response<List<Event>>
+
+    @GET("api/events/{id}")
+    suspend fun eventsGetEvent(
+        @Path("id") id: Long,
+    ): Response<Event>
+
+    @DELETE("api/events/{id}")
+    suspend fun eventsDeleteEvent(
+        @Path("id") id: Long,
+    ): Response<Unit>
+
+    @GET("api/events/latest")
+    suspend fun eventsGetLatestPageEvent(@Query("count") count: Int): Response<List<Event>>
+
+
+    ////////////////////////////////////// JOBS /////////////////////////////////////////////////
+    @GET("api/{userId}/jobs")
+    suspend fun jobsGetAllJob(
+        @Path("userId") userId: Long,
+    ): Response<List<Job>>
 
 }

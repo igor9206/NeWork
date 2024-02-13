@@ -10,14 +10,11 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.nework.R
 import ru.netology.nework.api.ApiService
+import ru.netology.nework.model.AuthModel
 import ru.netology.nework.model.PhotoModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
-data class AuthState(
-    val id: Long = 0L,
-    val token: String? = null
-)
 
 @Singleton
 class AppAuth @Inject constructor(
@@ -30,17 +27,17 @@ class AppAuth @Inject constructor(
     private val idKey = "id"
     private val tokenKey = "token"
     private val _authState = MutableStateFlow(
-        AuthState(
+        AuthModel(
             prefs.getLong(idKey, 0L),
             prefs.getString(tokenKey, null)
         )
     )
 
-    val authState: StateFlow<AuthState> = _authState.asStateFlow()
+    val authState: StateFlow<AuthModel> = _authState.asStateFlow()
 
     @Synchronized
     fun setAuth(id: Long, token: String) {
-        _authState.value = AuthState(id, token)
+        _authState.value = AuthModel(id, token)
         with(prefs.edit()) {
             putLong(idKey, id)
             putString(tokenKey, token)
@@ -50,7 +47,7 @@ class AppAuth @Inject constructor(
 
     @Synchronized
     fun removeAuth() {
-        _authState.value = AuthState()
+        _authState.value = AuthModel()
         with(prefs.edit()) {
             clear()
             commit()

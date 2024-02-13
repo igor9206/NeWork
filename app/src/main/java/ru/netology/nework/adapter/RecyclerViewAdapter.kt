@@ -11,10 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nework.R
 import ru.netology.nework.databinding.CardEventBinding
 import ru.netology.nework.databinding.CardPostBinding
+import ru.netology.nework.databinding.CardUserBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.Event
+import ru.netology.nework.dto.EventType
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
+import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.extension.loadAvatar
 import java.time.format.DateTimeFormatter
@@ -30,6 +33,7 @@ class RecyclerViewAdapter(
         return when (getItem(position)) {
             is Post -> R.layout.card_post
             is Event -> R.layout.card_event
+            is UserResponse -> R.layout.card_user
             null -> error("unknown item type")
         }
     }
@@ -48,6 +52,12 @@ class RecyclerViewAdapter(
                 EventViewHolder(binding)
             }
 
+            R.layout.card_user -> {
+                val binding =
+                    CardUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                UserViewHolder(binding)
+            }
+
             else -> error("unknown view type: $viewType")
         }
 
@@ -57,6 +67,7 @@ class RecyclerViewAdapter(
         when (val item = getItem(position)) {
             is Post -> (holder as? PostViewHolder)?.bind(item)
             is Event -> (holder as? EventViewHolder)?.bind(item)
+            is UserResponse -> (holder as? UserViewHolder)?.bind(item)
             null -> error("unknown view type")
         }
     }
@@ -73,12 +84,14 @@ class PostViewHolder(
             datePublication.text =
                 post.published.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
             content.text = post.content
+            buttonLike.text = post.likeOwnerIds.size.toString()
 
             imageContent.loadAttachment(post.attachment?.url)
             imageContent.isVisible = post.attachment?.type == AttachmentType.IMAGE
 
             videoContent.isVisible = post.attachment?.type == AttachmentType.VIDEO
 
+            buttonOption.isVisible = post.ownedByMe
             buttonOption.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.post_options)
@@ -109,7 +122,29 @@ class EventViewHolder(
     private val binding: CardEventBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(event: Event) {
-        binding.authorName.text = event.author
+        with(binding) {
+            avatar.loadAvatar(event.authorAvatar)
+            authorName.text = event.author
+            datePublication.text =
+                event.published.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+            content.text = event.content
+            typeEvent.text = event.type.toString()
+            dateEvent.text = event.datetime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+            buttonLike.text = event.likeOwnerIds.size.toString()
+
+            buttonPlayEvent.isVisible = event.type == EventType.ONLINE
+            buttonOption.isVisible = event.ownedByMe
+        }
+    }
+}
+
+class UserViewHolder(
+    private val binding: CardUserBinding
+) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(userResponse: UserResponse) {
+        with(binding) {
+            authorName.text = userResponse.name
+        }
     }
 }
 

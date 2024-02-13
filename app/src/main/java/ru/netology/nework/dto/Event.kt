@@ -20,7 +20,8 @@ data class Event(
     val participatedByMe: Boolean,
     val attachment: Attachment? = null,
     val link: String? = null,
-    val users: Map<String, UserPreview>
+    val users: Map<String, UserPreview>,
+    val ownedByMe: Boolean = false,
 ) : FeedItem
 
 enum class EventType {

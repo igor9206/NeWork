@@ -9,13 +9,16 @@ import ru.netology.nework.api.ApiService
 import ru.netology.nework.dao.event.EventDao
 import ru.netology.nework.dao.event.EventRemoteKeyDao
 import ru.netology.nework.db.AppDb
+import ru.netology.nework.entity.KeyType
 import ru.netology.nework.entity.event.EventEntity
 import ru.netology.nework.entity.event.EventRemoteKeyEntity
 import ru.netology.nework.entity.event.toEntity
-import ru.netology.nework.entity.post.PostRemoteKeyEntity
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @OptIn(ExperimentalPagingApi::class)
-class EventRemoteMediator(
+@Singleton
+class EventRemoteMediator @Inject constructor(
     private val apiService: ApiService,
     private val appDb: AppDb,
     private val eventDao: EventDao,
@@ -28,17 +31,17 @@ class EventRemoteMediator(
         try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    apiService.getLatestPageEvent(state.config.pageSize)
+                    apiService.eventsGetLatestPageEvent(state.config.pageSize)
                 }
 
                 LoadType.PREPEND -> {
                     val id = eventRemoteKeyDao.max() ?: return MediatorResult.Success(false)
-                    apiService.getAfterEvent(id, state.config.pageSize)
+                    apiService.eventsGetAfterEvent(id, state.config.pageSize)
                 }
 
                 LoadType.APPEND -> {
                     val id = eventRemoteKeyDao.min() ?: return MediatorResult.Success(false)
-                    apiService.getBeforeEvent(id, state.config.pageSize)
+                    apiService.eventsGetBeforeEvent(id, state.config.pageSize)
                 }
             }
 
@@ -56,11 +59,11 @@ class EventRemoteMediator(
                         eventRemoteKeyDao.insert(
                             listOf(
                                 EventRemoteKeyEntity(
-                                    PostRemoteKeyEntity.KeyType.AFTER,
+                                    KeyType.AFTER,
                                     body.first().id
                                 ),
                                 EventRemoteKeyEntity(
-                                    PostRemoteKeyEntity.KeyType.BEFORE,
+                                    KeyType.BEFORE,
                                     body.last().id
                                 )
                             )
@@ -71,7 +74,7 @@ class EventRemoteMediator(
                     LoadType.PREPEND -> {
                         eventRemoteKeyDao.insert(
                             EventRemoteKeyEntity(
-                                PostRemoteKeyEntity.KeyType.AFTER,
+                                KeyType.AFTER,
                                 body.first().id
                             )
                         )
@@ -80,7 +83,7 @@ class EventRemoteMediator(
                     LoadType.APPEND -> {
                         eventRemoteKeyDao.insert(
                             EventRemoteKeyEntity(
-                                PostRemoteKeyEntity.KeyType.BEFORE,
+                                KeyType.BEFORE,
                                 body.last().id
                             )
                         )

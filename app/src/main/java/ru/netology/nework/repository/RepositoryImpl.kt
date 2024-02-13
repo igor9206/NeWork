@@ -12,44 +12,58 @@ import ru.netology.nework.dao.event.EventDao
 import ru.netology.nework.dao.event.EventRemoteKeyDao
 import ru.netology.nework.dao.post.PostDao
 import ru.netology.nework.dao.post.PostRemoteKeyDao
+import ru.netology.nework.dao.user.UserDao
 import ru.netology.nework.db.AppDb
-import ru.netology.nework.dto.Event
-import ru.netology.nework.dto.Post
+import ru.netology.nework.dto.FeedItem
+import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.entity.event.EventEntity
 import ru.netology.nework.entity.post.PostEntity
+import ru.netology.nework.entity.user.UserEntity
+import ru.netology.nework.entity.user.toEntity
 import ru.netology.nework.repository.remotemediator.EventRemoteMediator
 import ru.netology.nework.repository.remotemediator.PostRemoteMediator
+import ru.netology.nework.repository.remotemediator.UserRemoteMediator
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@OptIn(ExperimentalPagingApi::class)
 @Singleton
 class RepositoryImpl @Inject constructor(
-    apiService: ApiService,
-    appDb: AppDb,
     postDao: PostDao,
-    postRemoteKeyDao: PostRemoteKeyDao,
+    postRemoteMediator: PostRemoteMediator,
     eventDao: EventDao,
-    eventRemoteKeyDao: EventRemoteKeyDao
+    eventRemoteMediator: EventRemoteMediator,
+    userDao: UserDao,
+    userRemoteMediator: UserRemoteMediator
 ) : Repository {
 
-    @OptIn(ExperimentalPagingApi::class)
-    override val dataPost: Flow<PagingData<Post>> = Pager(
-        config = PagingConfig(pageSize = 3, enablePlaceholders = false),
+
+    override val dataPost: Flow<PagingData<FeedItem>> = Pager(
+        config = PagingConfig(pageSize = 4, enablePlaceholders = false),
         pagingSourceFactory = { postDao.pagingSource() },
-        remoteMediator = PostRemoteMediator(apiService, appDb, postDao, postRemoteKeyDao)
+        remoteMediator = postRemoteMediator
     ).flow
         .map {
             it.map(PostEntity::toDto)
         }
 
-    @OptIn(ExperimentalPagingApi::class)
-    override val dataEvent: Flow<PagingData<Event>> = Pager(
+
+    override val dataEvent: Flow<PagingData<FeedItem>> = Pager(
         config = PagingConfig(pageSize = 3, enablePlaceholders = false),
         pagingSourceFactory = { eventDao.pagingSource() },
-        remoteMediator = EventRemoteMediator(apiService, appDb, eventDao, eventRemoteKeyDao)
+        remoteMediator = eventRemoteMediator
     ).flow
         .map {
             it.map(EventEntity::toDto)
         }
+
+    override val dataUser: Flow<PagingData<FeedItem>> = Pager(
+        config = PagingConfig(pageSize = 4, enablePlaceholders = false),
+        pagingSourceFactory = { userDao.pagingSource() },
+        remoteMediator = userRemoteMediator
+    ).flow.map {
+        it.map(UserEntity::toDto)
+    }
+
 
 }

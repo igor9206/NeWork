@@ -11,8 +11,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.R
-import ru.netology.nework.auth.AuthState
 import ru.netology.nework.databinding.FragmentMainBinding
+import ru.netology.nework.model.AuthModel
 import ru.netology.nework.viewmodel.AuthViewModel
 
 @AndroidEntryPoint
@@ -31,7 +31,7 @@ class MainFragment : Fragment() {
         val childNavController = childNavHostFragment.navController
         binding.bottomNavigation.setupWithNavController(childNavController)
 
-        var token: AuthState? = null
+        var token: AuthModel? = null
         binding.topAppBar.setOnMenuItemClickListener { menu ->
             when (menu.itemId) {
                 R.id.user -> {

@@ -11,6 +11,7 @@ import ru.netology.nework.dao.event.EventDao
 import ru.netology.nework.dao.event.EventRemoteKeyDao
 import ru.netology.nework.dao.post.PostDao
 import ru.netology.nework.dao.post.PostRemoteKeyDao
+import ru.netology.nework.dao.user.UserDao
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -43,5 +44,11 @@ class DbModule {
     fun provideEventRemoteKeyDao(
         appDb: AppDb
     ): EventRemoteKeyDao = appDb.eventRemoteKeyDao()
+
+    @Provides
+    fun provideUserDao(
+        appDb: AppDb
+    ): UserDao = appDb.userDao()
+
 
 }

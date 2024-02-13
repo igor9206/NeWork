@@ -1,5 +1,6 @@
 package ru.netology.nework.entity.event
 
+import androidx.core.os.persistableBundleOf
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -40,7 +41,8 @@ data class EventEntity(
     val participatedByMe: Boolean,
     val attachment: Attachment? = null,
     val link: String? = null,
-    val users: Map<String, UserPreview>
+    val users: Map<String, UserPreview>,
+    val ownedByMe: Boolean = false
 ) {
 
     fun toDto() = Event(
@@ -61,7 +63,8 @@ data class EventEntity(
         participatedByMe,
         attachment,
         link,
-        users
+        users,
+        ownedByMe,
     )
 
     companion object {
@@ -83,7 +86,8 @@ data class EventEntity(
             event.participatedByMe,
             event.attachment,
             event.link,
-            event.users
+            event.users,
+            event.ownedByMe,
         )
     }
 }
