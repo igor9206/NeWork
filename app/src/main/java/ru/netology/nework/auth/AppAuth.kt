@@ -1,17 +1,11 @@
 package ru.netology.nework.auth
 
 import android.content.Context
-import android.widget.Toast
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import ru.netology.nework.R
-import ru.netology.nework.api.ApiService
 import ru.netology.nework.model.AuthModel
-import ru.netology.nework.model.PhotoModel
 import javax.inject.Inject
 import javax.inject.Singleton
 

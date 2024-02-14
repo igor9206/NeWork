@@ -1,5 +1,6 @@
 package ru.netology.nework.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -16,7 +17,27 @@ import ru.netology.nework.auth.AppAuth
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
 import ru.netology.nework.repository.Repository
+import java.time.OffsetDateTime
 import javax.inject.Inject
+
+val emptyPost = Post(
+    id = 0,
+    authorId = 0,
+    author = "",
+    authorJob = null,
+    authorAvatar = null,
+    content = "",
+    published = OffsetDateTime.now(),
+    coords = null,
+    link = null,
+    mentionIds = emptyList(),
+    mentionedMe = false,
+    likeOwnerIds = emptyList(),
+    likedByMe = false,
+    attachment = null,
+    users = mapOf(),
+    ownedByMe = false,
+)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -43,8 +64,33 @@ class PostViewModel @Inject constructor(
             }
         }.flowOn(Dispatchers.Default)
 
+    private val editedPost = MutableLiveData(emptyPost)
+
     fun like(post: Post) = viewModelScope.launch {
         repository.like(post)
+    }
+
+    fun savePost(content: String) {
+        val text = content.trim()
+        if (editedPost.value?.content == text) {
+            editedPost.value = emptyPost
+            return
+        }
+        editedPost.value = editedPost.value?.copy(content = text)
+        editedPost.value?.let {
+            viewModelScope.launch {
+                repository.savePost(it)
+            }
+        }
+        editedPost.value = emptyPost
+    }
+
+    fun deletePost(post: Post) = viewModelScope.launch {
+        repository.deletePost(post.id)
+    }
+
+    fun edit(post: Post) {
+        editedPost.value = post
     }
 
 }

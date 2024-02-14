@@ -1,6 +1,5 @@
 package ru.netology.nework.entity.event
 
-import androidx.core.os.persistableBundleOf
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters

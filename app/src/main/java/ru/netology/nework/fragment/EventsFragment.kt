@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import ru.netology.nework.adapter.OnInteractionListener
 import ru.netology.nework.adapter.RecyclerViewAdapter
 import ru.netology.nework.databinding.FragmentEventsBinding
+import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.viewmodel.EventViewModel
 
 @AndroidEntryPoint
@@ -29,7 +30,19 @@ class EventsFragment : Fragment() {
     ): View {
         binding = FragmentEventsBinding.inflate(inflater, container, false)
 
-        val eventAdapter = RecyclerViewAdapter(object : OnInteractionListener {})
+        val eventAdapter = RecyclerViewAdapter(object : OnInteractionListener {
+            override fun like(feedItem: FeedItem) {
+                TODO("Not yet implemented")
+            }
+
+            override fun delete(feedItem: FeedItem) {
+                TODO("Not yet implemented")
+            }
+
+            override fun edit(feedItem: FeedItem) {
+                TODO("Not yet implemented")
+            }
+        })
         binding.recyclerViewEvent.adapter = eventAdapter
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

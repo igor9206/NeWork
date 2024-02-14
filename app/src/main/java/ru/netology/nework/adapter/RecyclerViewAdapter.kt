@@ -24,6 +24,8 @@ import java.time.format.DateTimeFormatter
 
 interface OnInteractionListener {
     fun like(feedItem: FeedItem)
+    fun delete(feedItem: FeedItem)
+    fun edit(feedItem: FeedItem)
 }
 
 class RecyclerViewAdapter(
@@ -104,10 +106,12 @@ class PostViewHolder(
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
                             R.id.delete -> {
+                                onInteractionListener.delete(post)
                                 true
                             }
 
                             R.id.edit -> {
+                                onInteractionListener.edit(post)
                                 true
                             }
 

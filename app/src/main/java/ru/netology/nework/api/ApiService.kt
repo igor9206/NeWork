@@ -187,7 +187,7 @@ interface ApiService {
         @Path("id") id: Long,
     ): Response<Post>
 
-    @DELETE("api/post/{id}")
+    @DELETE("api/posts/{id}")
     suspend fun postsDeletePost(
         @Path("id") id: Long,
     ): Response<Unit>

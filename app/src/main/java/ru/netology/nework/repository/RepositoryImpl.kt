@@ -17,18 +17,13 @@ import ru.netology.nework.R
 import ru.netology.nework.api.ApiService
 import ru.netology.nework.auth.AppAuth
 import ru.netology.nework.dao.event.EventDao
-import ru.netology.nework.dao.event.EventRemoteKeyDao
 import ru.netology.nework.dao.post.PostDao
-import ru.netology.nework.dao.post.PostRemoteKeyDao
 import ru.netology.nework.dao.user.UserDao
-import ru.netology.nework.db.AppDb
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
-import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.entity.event.EventEntity
 import ru.netology.nework.entity.post.PostEntity
 import ru.netology.nework.entity.user.UserEntity
-import ru.netology.nework.entity.user.toEntity
 import ru.netology.nework.model.AuthModel
 import ru.netology.nework.model.PhotoModel
 import ru.netology.nework.repository.remotemediator.EventRemoteMediator
@@ -160,6 +155,32 @@ class RepositoryImpl @Inject constructor(
             val body = response.body() ?: error(response.code())
 
             postDao.insert(PostEntity.fromDto(body))
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    override suspend fun savePost(post: Post) {
+        try {
+            val response = apiService.postsSavePost(post)
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+
+            val body = response.body() ?: error(response.code())
+            postDao.insert(PostEntity.fromDto(body))
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    override suspend fun deletePost(id: Long) {
+        try {
+            val response = apiService.postsDeletePost(id)
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+            postDao.deletePost(id)
         } catch (e: Exception) {
             error(e)
         }

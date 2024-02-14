@@ -4,8 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -24,11 +25,13 @@ import ru.netology.nework.model.AuthModel
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.PostViewModel
 
+const val EDIT_POST = "edit_post_content"
+
 @AndroidEntryPoint
 class PostsFragment : Fragment() {
     private lateinit var binding: FragmentPostsBinding
-    private val postViewModel: PostViewModel by viewModels()
-    private val authViewModel: AuthViewModel by viewModels()
+    private val postViewModel: PostViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +52,18 @@ class PostsFragment : Fragment() {
                 } else {
                     parentNavController?.navigate(R.id.action_mainFragment_to_loginFragment)
                 }
+            }
+
+            override fun delete(feedItem: FeedItem) {
+                postViewModel.deletePost(feedItem as Post)
+            }
+
+            override fun edit(feedItem: FeedItem) {
+                postViewModel.edit(feedItem as Post)
+                parentNavController?.navigate(
+                    R.id.action_mainFragment_to_newPostFragment,
+                    bundleOf(EDIT_POST to (feedItem as Post).content)
+                )
             }
         })
 

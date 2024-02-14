@@ -1,13 +1,10 @@
 package ru.netology.nework.repository
 
-import androidx.lifecycle.LiveData
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import ru.netology.nework.dto.Event
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
-import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.model.AuthModel
 import ru.netology.nework.model.PhotoModel
 
@@ -19,4 +16,6 @@ interface Repository {
     suspend fun register(login: String, name: String, pass: String, photo: PhotoModel?)
     suspend fun login(login: String, pass: String)
     suspend fun like(post: Post)
+    suspend fun savePost(post: Post)
+    suspend fun deletePost(id: Long)
 }
