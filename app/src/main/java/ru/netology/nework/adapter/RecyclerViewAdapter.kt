@@ -23,6 +23,7 @@ import ru.netology.nework.extension.loadAvatar
 import java.time.format.DateTimeFormatter
 
 interface OnInteractionListener {
+    fun like(feedItem: FeedItem)
 }
 
 class RecyclerViewAdapter(
@@ -85,11 +86,16 @@ class PostViewHolder(
                 post.published.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
             content.text = post.content
             buttonLike.text = post.likeOwnerIds.size.toString()
+            buttonLike.isChecked = post.likedByMe
 
             imageContent.loadAttachment(post.attachment?.url)
             imageContent.isVisible = post.attachment?.type == AttachmentType.IMAGE
 
             videoContent.isVisible = post.attachment?.type == AttachmentType.VIDEO
+
+            buttonLike.setOnClickListener {
+                onInteractionListener.like(post)
+            }
 
             buttonOption.isVisible = post.ownedByMe
             buttonOption.setOnClickListener {

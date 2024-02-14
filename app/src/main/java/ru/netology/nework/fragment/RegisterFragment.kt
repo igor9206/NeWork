@@ -88,8 +88,16 @@ class RegisterFragment : Fragment() {
 
         }
 
-        authViewModel.data.observe(viewLifecycleOwner) { state ->
+        authViewModel.dataAuth.observe(viewLifecycleOwner) { state ->
             val token = state.token.toString()
+
+            if (state.id != 0L && token.isNotEmpty()) {
+                findNavController().navigateUp()
+            }
+        }
+
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
         }
 
         return binding.root

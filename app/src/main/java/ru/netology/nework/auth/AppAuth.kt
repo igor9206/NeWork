@@ -20,7 +20,6 @@ import javax.inject.Singleton
 class AppAuth @Inject constructor(
     @ApplicationContext
     private val context: Context,
-    private val apiService: ApiService
 ) {
     private val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
 
@@ -52,74 +51,6 @@ class AppAuth @Inject constructor(
             clear()
             commit()
         }
-    }
-
-    suspend fun register(login: String, name: String, pass: String, photo: PhotoModel?) {
-        try {
-            val response = if (photo != null) {
-                val part = MultipartBody.Part.createFormData(
-                    "file",
-                    photo.file.name,
-                    photo.file.asRequestBody()
-                )
-                apiService.usersRegistrationWithPhoto(login, pass, name, part)
-            } else {
-                apiService.usersRegistration(login, pass, name)
-            }
-
-            if (!response.isSuccessful) {
-                when (response.code()) {
-                    403 -> {
-                        toastMsg(context.getString(R.string.the_user_is_already_registered))
-                    }
-
-                    415 -> {
-                        toastMsg(context.getString(R.string.incorrect_photo_format))
-                    }
-
-                    else -> toastMsg("${context.getString(R.string.unknown_error)}: ${response.code()}")
-                }
-                return
-            }
-
-            val body = response.body() ?: throw Exception("Body is Empty")
-            setAuth(body.id, body.token)
-        } catch (e: Exception) {
-            toastMsg("${context.getString(R.string.unknown_error)}: ${e.message}")
-        }
-    }
-
-    suspend fun login(login: String, pass: String) {
-        try {
-            val response = apiService.usersAuthentication(login, pass)
-            if (!response.isSuccessful) {
-                when (response.code()) {
-                    400 -> {
-                        toastMsg(context.getString(R.string.incorrect_password))
-                    }
-
-                    404 -> {
-                        toastMsg(context.getString(R.string.user_unregistered))
-                    }
-
-                    else -> toastMsg("${context.getString(R.string.unknown_error)}: ${response.code()}")
-                }
-                return
-            }
-
-            val body = response.body() ?: throw Exception("Body is Empty")
-            setAuth(body.id, body.token)
-        } catch (e: Exception) {
-            toastMsg("${context.getString(R.string.unknown_error)}: ${e.message}")
-        }
-    }
-
-    private fun toastMsg(msg: String) {
-        Toast.makeText(
-            context,
-            msg,
-            Toast.LENGTH_SHORT
-        ).show()
     }
 
 }

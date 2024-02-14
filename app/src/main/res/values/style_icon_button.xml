@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.AppTheme.LikeButton" parent="@style/Widget.Material3.Button.IconButton">
+        <item name="iconTint">@color/icon_button_selector</item>
+        <item name="iconPadding">4dp</item>
+        <item name="android:textColor">@color/icon_button_selector</item>
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
+</resources>

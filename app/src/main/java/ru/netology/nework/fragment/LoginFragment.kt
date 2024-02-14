@@ -33,12 +33,16 @@ class LoginFragment : Fragment() {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
 
-        authViewModel.data.observe(viewLifecycleOwner) { state ->
+        authViewModel.dataAuth.observe(viewLifecycleOwner) { state ->
             val token = state.token.toString()
 
             if (state.id != 0L && token.isNotEmpty()) {
                 findNavController().navigateUp()
             }
+        }
+
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
         }
 
         return binding.root

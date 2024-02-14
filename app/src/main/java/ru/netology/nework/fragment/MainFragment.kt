@@ -26,16 +26,19 @@ class MainFragment : Fragment() {
     ): View {
         binding = FragmentMainBinding.inflate(inflater, container, false)
 
+        var token: AuthModel? = null
+        authViewModel.dataAuth.observe(viewLifecycleOwner) { state ->
+            token = state
+        }
+
         val childNavHostFragment =
             childFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment
         val childNavController = childNavHostFragment.navController
         binding.bottomNavigation.setupWithNavController(childNavController)
 
-        var token: AuthModel? = null
         binding.topAppBar.setOnMenuItemClickListener { menu ->
             when (menu.itemId) {
                 R.id.user -> {
-                    println(token)
                     if (token?.id != 0L && token?.id.toString().isNotEmpty()) {
                         findNavController().navigate(R.id.action_mainFragment_to_detailUserFragment)
                     } else {
@@ -46,10 +49,6 @@ class MainFragment : Fragment() {
 
                 else -> false
             }
-        }
-
-        authViewModel.data.observe(viewLifecycleOwner) { state ->
-            token = state
         }
 
         return binding.root

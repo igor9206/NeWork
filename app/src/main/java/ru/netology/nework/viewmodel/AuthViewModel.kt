@@ -9,18 +9,18 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.netology.nework.auth.AppAuth
 import ru.netology.nework.model.AuthModel
 import ru.netology.nework.model.PhotoModel
+import ru.netology.nework.repository.Repository
 import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val appAuth: AppAuth
+    private val repository: Repository
 ) : ViewModel() {
 
-    val data: LiveData<AuthModel> = appAuth.authState.asLiveData(Dispatchers.Default)
+    val dataAuth: LiveData<AuthModel> = repository.dataAuth.asLiveData(Dispatchers.Default)
 
     private val _photoData: MutableLiveData<PhotoModel?> = MutableLiveData(null)
     val photoData: LiveData<PhotoModel?>
@@ -29,13 +29,13 @@ class AuthViewModel @Inject constructor(
     fun register(login: String, name: String, pass: String) {
         viewModelScope.launch {
             val photo = _photoData.value
-            appAuth.register(login, name, pass, photo)
+            repository.register(login, name, pass, photo)
         }
     }
 
     fun login(login: String, pass: String) {
         viewModelScope.launch {
-            appAuth.login(login, pass)
+            repository.login(login, pass)
         }
     }
 

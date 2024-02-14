@@ -13,6 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import ru.netology.nework.BuildConfig
+import ru.netology.nework.auth.AppAuth
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -27,8 +28,17 @@ class ApiServiceModule {
 
     @Singleton
     @Provides
-    fun provideOkHttp(): OkHttpClient = OkHttpClient.Builder()
+    fun provideOkHttp(
+        appAuth: AppAuth
+    ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
+            appAuth.authState.value.token?.let { token->
+                val request = chain.request().newBuilder()
+                    .addHeader("Authorization", token)
+                    .addHeader("Api-Key", BuildConfig.API_KEY)
+                    .build()
+                return@addInterceptor chain.proceed(request)
+            }
             val request = chain.request().newBuilder()
                 .addHeader("Api-Key", BuildConfig.API_KEY)
                 .build()
