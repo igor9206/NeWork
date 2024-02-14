@@ -15,7 +15,6 @@
             android:id="@+id/recyclerViewEvent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/card_event" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

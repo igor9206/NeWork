@@ -31,6 +31,7 @@ class MainFragment : Fragment() {
             token = state
         }
 
+
         val childNavHostFragment =
             childFragmentManager.findFragmentById(R.id.fragmentContainer) as NavHostFragment
         val childNavController = childNavHostFragment.navController

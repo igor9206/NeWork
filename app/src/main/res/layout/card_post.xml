@@ -8,9 +8,10 @@
     android:layout_marginVertical="4dp">
 
     <com.google.android.material.card.MaterialCardView
-        style="@style/Widget.Material3.CardView.Outlined"
+        style="@style/Widget.AppTheme.CardView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clickable="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -72,17 +73,22 @@
             <ImageView
                 android:id="@+id/imageContent"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
                 android:contentDescription="@string/image_content"
+                android:maxHeight="400dp"
+                android:scaleType="fitCenter"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/barrierTop" />
+                app:layout_constraintTop_toBottomOf="@id/barrierTop"
+                tools:src="@tools:sample/avatars" />
 
             <androidx.media3.ui.PlayerView
                 android:id="@+id/videoContent"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/barrierTop" />
+                app:layout_constraintTop_toBottomOf="@id/imageContent"
+                tools:visibility="visible" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrierBottom"
