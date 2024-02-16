@@ -13,22 +13,26 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.Response
 import ru.netology.nework.R
 import ru.netology.nework.api.ApiService
 import ru.netology.nework.auth.AppAuth
 import ru.netology.nework.dao.event.EventDao
 import ru.netology.nework.dao.post.PostDao
 import ru.netology.nework.dao.user.UserDao
+import ru.netology.nework.dto.Attachment
 import ru.netology.nework.dto.FeedItem
+import ru.netology.nework.dto.Media
 import ru.netology.nework.dto.Post
 import ru.netology.nework.entity.event.EventEntity
 import ru.netology.nework.entity.post.PostEntity
 import ru.netology.nework.entity.user.UserEntity
+import ru.netology.nework.model.AttachmentModel
 import ru.netology.nework.model.AuthModel
-import ru.netology.nework.model.PhotoModel
 import ru.netology.nework.repository.remotemediator.EventRemoteMediator
 import ru.netology.nework.repository.remotemediator.PostRemoteMediator
 import ru.netology.nework.repository.remotemediator.UserRemoteMediator
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -76,13 +80,18 @@ class RepositoryImpl @Inject constructor(
         it.map(UserEntity::toDto)
     }
 
-    override suspend fun register(login: String, name: String, pass: String, photo: PhotoModel?) {
+    override suspend fun register(
+        login: String,
+        name: String,
+        pass: String,
+        attachmentModel: AttachmentModel?
+    ) {
         try {
-            val response = if (photo != null) {
+            val response = if (attachmentModel != null) {
                 val part = MultipartBody.Part.createFormData(
                     "file",
-                    photo.file.name,
-                    photo.file.asRequestBody()
+                    attachmentModel.file.name,
+                    attachmentModel.file.asRequestBody()
                 )
                 apiService.usersRegistrationWithPhoto(login, pass, name, part)
             } else {
@@ -172,6 +181,39 @@ class RepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             error(e)
         }
+    }
+
+    override suspend fun savePostWithAttachment(post: Post, attachmentModel: AttachmentModel) {
+        try {
+            val mediaResponse = saveMedia(attachmentModel.file)
+            if (!mediaResponse.isSuccessful) {
+                error(mediaResponse.code())
+            }
+            val media = mediaResponse.body() ?: error(mediaResponse.message())
+
+            val response = apiService.postsSavePost(
+                post.copy(
+                    attachment = Attachment(
+                        media.url,
+                        attachmentModel.attachmentType
+                    )
+                )
+            )
+
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+
+            val body = response.body() ?: error(response.message())
+            postDao.insert(PostEntity.fromDto(body))
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    private suspend fun saveMedia(file: File): Response<Media> {
+        val part = MultipartBody.Part.createFormData("file", file.name, file.asRequestBody())
+        return apiService.mediaSaveMedia(part)
     }
 
     override suspend fun deletePost(id: Long) {

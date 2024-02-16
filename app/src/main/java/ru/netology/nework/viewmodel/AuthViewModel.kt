@@ -9,8 +9,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.netology.nework.dto.AttachmentType
+import ru.netology.nework.model.AttachmentModel
 import ru.netology.nework.model.AuthModel
-import ru.netology.nework.model.PhotoModel
 import ru.netology.nework.repository.Repository
 import java.io.File
 import javax.inject.Inject
@@ -22,8 +23,8 @@ class AuthViewModel @Inject constructor(
 
     val dataAuth: LiveData<AuthModel> = repository.dataAuth.asLiveData(Dispatchers.Default)
 
-    private val _photoData: MutableLiveData<PhotoModel?> = MutableLiveData(null)
-    val photoData: LiveData<PhotoModel?>
+    private val _photoData: MutableLiveData<AttachmentModel?> = MutableLiveData(null)
+    val photoData: LiveData<AttachmentModel?>
         get() = _photoData
 
     fun register(login: String, name: String, pass: String) {
@@ -40,6 +41,6 @@ class AuthViewModel @Inject constructor(
     }
 
     fun setPhoto(uri: Uri, file: File) {
-        _photoData.value = PhotoModel(uri, file)
+        _photoData.value = AttachmentModel(AttachmentType.IMAGE, uri, file)
     }
 }

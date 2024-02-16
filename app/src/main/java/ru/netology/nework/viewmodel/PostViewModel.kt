@@ -1,5 +1,7 @@
 package ru.netology.nework.viewmodel
 
+import android.net.Uri
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,9 +16,12 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nework.auth.AppAuth
+import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
+import ru.netology.nework.model.AttachmentModel
 import ru.netology.nework.repository.Repository
+import java.io.File
 import java.time.OffsetDateTime
 import javax.inject.Inject
 
@@ -66,6 +71,10 @@ class PostViewModel @Inject constructor(
 
     private val editedPost = MutableLiveData(emptyPost)
 
+    private val _attachmentData: MutableLiveData<AttachmentModel?> = MutableLiveData(null)
+    val attachmentData: LiveData<AttachmentModel?>
+        get() = _attachmentData
+
     fun like(post: Post) = viewModelScope.launch {
         repository.like(post)
     }
@@ -79,10 +88,16 @@ class PostViewModel @Inject constructor(
         editedPost.value = editedPost.value?.copy(content = text)
         editedPost.value?.let {
             viewModelScope.launch {
-                repository.savePost(it)
+                val attachment = _attachmentData.value
+                if (attachment == null) {
+                    repository.savePost(it)
+                } else {
+                    repository.savePostWithAttachment(it, attachment)
+                }
             }
         }
         editedPost.value = emptyPost
+        _attachmentData.value = null
     }
 
     fun deletePost(post: Post) = viewModelScope.launch {
@@ -91,6 +106,14 @@ class PostViewModel @Inject constructor(
 
     fun edit(post: Post) {
         editedPost.value = post
+    }
+
+    fun setAttachment(uri: Uri, file: File, attachmentType: AttachmentType) {
+        _attachmentData.value = AttachmentModel(attachmentType, uri, file)
+    }
+
+    fun removePhoto() {
+        _attachmentData.value = null
     }
 
 }
