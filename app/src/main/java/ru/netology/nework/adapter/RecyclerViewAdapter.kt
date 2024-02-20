@@ -31,7 +31,8 @@ interface OnInteractionListener {
 
 class RecyclerViewAdapter(
     private val onInteractionListener: OnInteractionListener,
-    private val selectUser: String?
+    private val selectUser: String?,
+    private val test: List<Long>? = null
 ) : PagingDataAdapter<FeedItem, RecyclerView.ViewHolder>(PostDiffCallBack()) {
 
     override fun getItemViewType(position: Int): Int {
@@ -72,7 +73,10 @@ class RecyclerViewAdapter(
         when (val item = getItem(position)) {
             is Post -> (holder as? PostViewHolder)?.bind(item)
             is Event -> (holder as? EventViewHolder)?.bind(item)
-            is UserResponse -> (holder as? UserViewHolder)?.bind(item)
+            is UserResponse -> (holder as? UserViewHolder)?.bind(if (test?.firstOrNull { it == item.id } == null) item else item.copy(
+                selected = true
+            ))
+
             null -> error("unknown view type")
         }
     }
@@ -160,6 +164,7 @@ class UserViewHolder(
         with(binding) {
             authorName.text = userResponse.name
             checkBox.isVisible = selectUser != null
+            checkBox.isChecked = userResponse.selected
 
             checkBox.setOnClickListener {
                 onInteractionListener.selectUser(userResponse)

@@ -4,28 +4,31 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import ru.netology.nework.R
 import ru.netology.nework.adapter.OnInteractionListener
 import ru.netology.nework.adapter.RecyclerViewAdapter
-import ru.netology.nework.dao.user.UserDao
 import ru.netology.nework.databinding.FragmentUsersBinding
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.UserResponse
+import ru.netology.nework.viewmodel.PostViewModel
 import ru.netology.nework.viewmodel.UserViewModel
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class UsersFragment : Fragment() {
     private lateinit var binding: FragmentUsersBinding
     private val userViewModel: UserViewModel by activityViewModels()
+    private val postViewModel: PostViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +37,7 @@ class UsersFragment : Fragment() {
         binding = FragmentUsersBinding.inflate(inflater, container, false)
 
         val arg = arguments?.getString("selectUser")
+        val selectedUsers = mutableListOf<Long>()
 
         val userAdapter = RecyclerViewAdapter(object : OnInteractionListener {
             override fun like(feedItem: FeedItem) {
@@ -49,8 +53,13 @@ class UsersFragment : Fragment() {
             }
 
             override fun selectUser(userResponse: UserResponse) {
+                if (selectedUsers.contains(userResponse.id)) {
+                    selectedUsers.remove(userResponse.id)
+                } else {
+                    selectedUsers.add(userResponse.id)
+                }
             }
-        }, arg)
+        }, arg, selectedUsers)
         binding.recyclerViewUser.adapter = userAdapter
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -70,6 +79,23 @@ class UsersFragment : Fragment() {
 
         binding.swipeRefresh.setOnRefreshListener {
             userAdapter.refresh()
+        }
+
+        binding.topAppBar.isVisible = arg != null
+        binding.topAppBar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.save -> {
+                    postViewModel.setMentionId(selectedUsers)
+                    findNavController().navigateUp()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
         }
 
 

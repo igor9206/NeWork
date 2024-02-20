@@ -17,6 +17,7 @@ import ru.netology.nework.adapter.OnInteractionListener
 import ru.netology.nework.adapter.RecyclerViewAdapter
 import ru.netology.nework.databinding.FragmentEventsBinding
 import ru.netology.nework.dto.FeedItem
+import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.viewmodel.EventViewModel
 
 @AndroidEntryPoint
@@ -40,6 +41,10 @@ class EventsFragment : Fragment() {
             }
 
             override fun edit(feedItem: FeedItem) {
+                TODO("Not yet implemented")
+            }
+
+            override fun selectUser(userResponse: UserResponse) {
                 TODO("Not yet implemented")
             }
         }, null)

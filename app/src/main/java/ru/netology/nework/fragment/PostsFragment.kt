@@ -21,6 +21,7 @@ import ru.netology.nework.adapter.RecyclerViewAdapter
 import ru.netology.nework.databinding.FragmentPostsBinding
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
+import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.model.AuthModel
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.PostViewModel
@@ -64,6 +65,10 @@ class PostsFragment : Fragment() {
                     R.id.action_mainFragment_to_newPostFragment,
                     bundleOf(EDIT_POST to feedItem.content)
                 )
+            }
+
+            override fun selectUser(userResponse: UserResponse) {
+                TODO("Not yet implemented")
             }
         }, null)
 

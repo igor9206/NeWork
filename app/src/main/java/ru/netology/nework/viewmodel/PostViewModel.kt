@@ -80,6 +80,9 @@ class PostViewModel @Inject constructor(
     private val _coordData: MutableLiveData<Point?> = MutableLiveData(null)
     val coordData: LiveData<Point?> = _coordData
 
+    private val _mentionIdData: MutableLiveData<List<Long>> = MutableLiveData()
+    val mentionIdData: LiveData<List<Long>> = _mentionIdData
+
     fun like(post: Post) = viewModelScope.launch {
         repository.like(post)
     }
@@ -99,14 +102,26 @@ class PostViewModel @Inject constructor(
                     _coordData.value!!.longitude
                 )
                 if (attachment == null) {
-                    repository.savePost(it.copy(coords = coord))
+                    repository.savePost(
+                        it.copy(
+                            coords = coord,
+                            mentionIds = _mentionIdData.value!!
+                        )
+                    )
                 } else {
-                    repository.savePostWithAttachment(it.copy(coords = coord), attachment)
+                    repository.savePostWithAttachment(
+                        it.copy(
+                            coords = coord,
+                            mentionIds = _mentionIdData.value!!
+                        ), attachment
+                    )
                 }
             }
         }
         editedPost.value = emptyPost
         _attachmentData.value = null
+        _coordData.value = null
+        _mentionIdData.value = emptyList()
     }
 
     fun deletePost(post: Post) = viewModelScope.launch {
@@ -127,6 +142,10 @@ class PostViewModel @Inject constructor(
 
     fun setCoord(point: Point?) {
         _coordData.value = point
+    }
+
+    fun setMentionId(selectedUsers: MutableList<Long>) {
+        _mentionIdData.value = selectedUsers
     }
 
 }
