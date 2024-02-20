@@ -62,10 +62,10 @@ class PostsFragment : Fragment() {
                 postViewModel.edit(feedItem as Post)
                 parentNavController?.navigate(
                     R.id.action_mainFragment_to_newPostFragment,
-                    bundleOf(EDIT_POST to (feedItem as Post).content)
+                    bundleOf(EDIT_POST to feedItem.content)
                 )
             }
-        })
+        }, null)
 
         binding.recyclerViewPost.adapter = postAdapter
         viewLifecycleOwner.lifecycleScope.launch {

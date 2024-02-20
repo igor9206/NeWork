@@ -30,6 +30,11 @@ android {
             properties.load(file.inputStream())
         }
         buildConfigField("String", "API_KEY", properties.getProperty("API_KEY", ""))
+        buildConfigField(
+            "String",
+            "MAPKIT_API_KEY",
+            properties.getProperty("MAPKIT_API_KEY", "")
+        )
     }
 
     buildTypes {
@@ -71,6 +76,7 @@ dependencies {
     val constraintLayoutVersion = "2.2.0-alpha13"
     val glideVersion = "4.16.0"
     val exoPlayerVersion = "1.2.1"
+    val yaMapKitVersion = "4.4.0-lite"
 
     implementation("androidx.activity:activity-ktx:$activityKtxVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
@@ -97,6 +103,7 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:$exoPlayerVersion")
     implementation("androidx.media3:media3-exoplayer-dash:$exoPlayerVersion")
     implementation("androidx.media3:media3-ui:$exoPlayerVersion")
+    implementation("com.yandex.android:maps.mobile:$yaMapKitVersion")
 
 
     implementation("androidx.core:core-ktx:1.12.0")

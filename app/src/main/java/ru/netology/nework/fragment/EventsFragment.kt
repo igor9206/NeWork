@@ -42,7 +42,7 @@ class EventsFragment : Fragment() {
             override fun edit(feedItem: FeedItem) {
                 TODO("Not yet implemented")
             }
-        })
+        }, null)
         binding.recyclerViewEvent.adapter = eventAdapter
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

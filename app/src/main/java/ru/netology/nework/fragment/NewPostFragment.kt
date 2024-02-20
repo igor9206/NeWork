@@ -12,11 +12,16 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.map.PlacemarkMapObject
+import com.yandex.mapkit.user_location.UserLocationLayer
+import com.yandex.runtime.image.ImageProvider
 import ru.netology.nework.R
 import ru.netology.nework.databinding.FragmentNewPostBinding
 import ru.netology.nework.dto.AttachmentType
@@ -27,6 +32,7 @@ import java.io.FileOutputStream
 class NewPostFragment : Fragment() {
     private lateinit var binding: FragmentNewPostBinding
     private val postViewModel: PostViewModel by activityViewModels()
+    private var placeMark: PlacemarkMapObject? = null
 
     private val startForPhotoResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -108,6 +114,18 @@ class NewPostFragment : Fragment() {
             postViewModel.removePhoto()
         }
 
+        binding.addLocation.setOnClickListener {
+            findNavController().navigate(R.id.action_newPostFragment_to_mapsFragment)
+        }
+
+        binding.addUser.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_newPostFragment_to_usersFragment2,
+                bundleOf("selectUser" to "selectUser")
+            )
+        }
+
+
         postViewModel.attachmentData.observe(viewLifecycleOwner) { attachment ->
             when (attachment?.attachmentType) {
                 AttachmentType.IMAGE -> {
@@ -123,6 +141,30 @@ class NewPostFragment : Fragment() {
                 null -> {
                     binding.imageContainer.isVisible = false
                 }
+            }
+        }
+
+        val imageProvider =
+            ImageProvider.fromResource(requireContext(), R.drawable.ic_location_on_24)
+        postViewModel.coordData.observe(viewLifecycleOwner) { point ->
+            if (point != null) {
+                if (placeMark == null) {
+                    placeMark = binding.map.mapWindow.map.mapObjects.addPlacemark()
+                }
+                placeMark?.apply {
+                    geometry = point
+                    setIcon(imageProvider)
+                    isVisible = true
+                }
+                binding.map.mapWindow.map.move(
+                    CameraPosition(
+                        point,
+                        13.0f,
+                        0f,
+                        0f
+                    )
+                )
+                binding.map.isVisible = true
             }
         }
 

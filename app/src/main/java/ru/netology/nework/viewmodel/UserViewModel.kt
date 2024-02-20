@@ -16,11 +16,10 @@ import javax.inject.Inject
 class UserViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
-
     val dataUser: Flow<PagingData<FeedItem>> =
         repository.dataUser.map {
-            it.map { userResponse ->
-                userResponse
+            it.map { feedItem ->
+                feedItem
             }
         }.flowOn(Dispatchers.Default)
 

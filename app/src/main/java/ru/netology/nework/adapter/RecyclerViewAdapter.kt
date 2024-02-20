@@ -26,10 +26,12 @@ interface OnInteractionListener {
     fun like(feedItem: FeedItem)
     fun delete(feedItem: FeedItem)
     fun edit(feedItem: FeedItem)
+    fun selectUser(userResponse: UserResponse)
 }
 
 class RecyclerViewAdapter(
-    private val onInteractionListener: OnInteractionListener
+    private val onInteractionListener: OnInteractionListener,
+    private val selectUser: String?
 ) : PagingDataAdapter<FeedItem, RecyclerView.ViewHolder>(PostDiffCallBack()) {
 
     override fun getItemViewType(position: Int): Int {
@@ -58,7 +60,7 @@ class RecyclerViewAdapter(
             R.layout.card_user -> {
                 val binding =
                     CardUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                UserViewHolder(binding)
+                UserViewHolder(binding, onInteractionListener, selectUser)
             }
 
             else -> error("unknown view type: $viewType")
@@ -149,11 +151,19 @@ class EventViewHolder(
 }
 
 class UserViewHolder(
-    private val binding: CardUserBinding
+    private val binding: CardUserBinding,
+    private val onInteractionListener: OnInteractionListener,
+    private val selectUser: String?
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(userResponse: UserResponse) {
+        println(userResponse)
         with(binding) {
             authorName.text = userResponse.name
+            checkBox.isVisible = selectUser != null
+
+            checkBox.setOnClickListener {
+                onInteractionListener.selectUser(userResponse)
+            }
         }
     }
 }

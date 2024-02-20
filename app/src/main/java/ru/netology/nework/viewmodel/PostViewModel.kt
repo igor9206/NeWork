@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
+import com.yandex.mapkit.geometry.Point
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nework.auth.AppAuth
 import ru.netology.nework.dto.AttachmentType
+import ru.netology.nework.dto.Coordinates
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
 import ru.netology.nework.model.AttachmentModel
@@ -75,6 +77,9 @@ class PostViewModel @Inject constructor(
     val attachmentData: LiveData<AttachmentModel?>
         get() = _attachmentData
 
+    private val _coordData: MutableLiveData<Point?> = MutableLiveData(null)
+    val coordData: LiveData<Point?> = _coordData
+
     fun like(post: Post) = viewModelScope.launch {
         repository.like(post)
     }
@@ -89,10 +94,14 @@ class PostViewModel @Inject constructor(
         editedPost.value?.let {
             viewModelScope.launch {
                 val attachment = _attachmentData.value
+                val coord = if (_coordData.value == null) null else Coordinates(
+                    _coordData.value!!.latitude,
+                    _coordData.value!!.longitude
+                )
                 if (attachment == null) {
-                    repository.savePost(it)
+                    repository.savePost(it.copy(coords = coord))
                 } else {
-                    repository.savePostWithAttachment(it, attachment)
+                    repository.savePostWithAttachment(it.copy(coords = coord), attachment)
                 }
             }
         }
@@ -114,6 +123,10 @@ class PostViewModel @Inject constructor(
 
     fun removePhoto() {
         _attachmentData.value = null
+    }
+
+    fun setCoord(point: Point?) {
+        _coordData.value = point
     }
 
 }

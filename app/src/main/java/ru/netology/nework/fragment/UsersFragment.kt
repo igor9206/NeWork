@@ -15,9 +15,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nework.adapter.OnInteractionListener
 import ru.netology.nework.adapter.RecyclerViewAdapter
+import ru.netology.nework.dao.user.UserDao
 import ru.netology.nework.databinding.FragmentUsersBinding
 import ru.netology.nework.dto.FeedItem
+import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.viewmodel.UserViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class UsersFragment : Fragment() {
@@ -29,6 +32,8 @@ class UsersFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentUsersBinding.inflate(inflater, container, false)
+
+        val arg = arguments?.getString("selectUser")
 
         val userAdapter = RecyclerViewAdapter(object : OnInteractionListener {
             override fun like(feedItem: FeedItem) {
@@ -42,7 +47,10 @@ class UsersFragment : Fragment() {
             override fun edit(feedItem: FeedItem) {
                 TODO("Not yet implemented")
             }
-        })
+
+            override fun selectUser(userResponse: UserResponse) {
+            }
+        }, arg)
         binding.recyclerViewUser.adapter = userAdapter
 
         viewLifecycleOwner.lifecycleScope.launch {

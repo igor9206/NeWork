@@ -49,5 +49,22 @@
         android:id="@+id/newPostFragment"
         android:name="ru.netology.nework.fragment.NewPostFragment"
         android:label="fragment_new_post"
-        tools:layout="@layout/fragment_new_post" />
+        tools:layout="@layout/fragment_new_post" >
+        <action
+            android:id="@+id/action_newPostFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
+        <action
+            android:id="@+id/action_newPostFragment_to_usersFragment2"
+            app:destination="@id/usersFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="ru.netology.nework.fragment.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" />
+    <fragment
+        android:id="@+id/usersFragment2"
+        android:name="ru.netology.nework.fragment.UsersFragment"
+        android:label="fragment_users"
+        tools:layout="@layout/fragment_users" />
 </navigation>
