@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nework.R
 import ru.netology.nework.adapter.OnInteractionListener
-import ru.netology.nework.adapter.RecyclerViewAdapter
+import ru.netology.nework.adapter.PostAdapter
 import ru.netology.nework.databinding.FragmentPostsBinding
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
@@ -46,7 +46,7 @@ class PostsFragment : Fragment() {
             token = state
         }
 
-        val postAdapter = RecyclerViewAdapter(object : OnInteractionListener {
+        val postAdapter = PostAdapter(object : OnInteractionListener {
             override fun like(feedItem: FeedItem) {
                 if (token?.id != 0L && token?.id.toString().isNotEmpty()) {
                     postViewModel.like(feedItem as Post)
@@ -60,7 +60,8 @@ class PostsFragment : Fragment() {
             }
 
             override fun edit(feedItem: FeedItem) {
-                postViewModel.edit(feedItem as Post)
+                feedItem as Post
+                postViewModel.edit(feedItem)
                 parentNavController?.navigate(
                     R.id.action_mainFragment_to_newPostFragment,
                     bundleOf(EDIT_POST to feedItem.content)
@@ -70,7 +71,7 @@ class PostsFragment : Fragment() {
             override fun selectUser(userResponse: UserResponse) {
                 TODO("Not yet implemented")
             }
-        }, null)
+        })
 
         binding.recyclerViewPost.adapter = postAdapter
         viewLifecycleOwner.lifecycleScope.launch {

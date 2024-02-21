@@ -21,6 +21,7 @@ import ru.netology.nework.dao.event.EventDao
 import ru.netology.nework.dao.post.PostDao
 import ru.netology.nework.dao.user.UserDao
 import ru.netology.nework.dto.Attachment
+import ru.netology.nework.dto.Event
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Media
 import ru.netology.nework.dto.Post
@@ -45,7 +46,7 @@ class RepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val postDao: PostDao,
     postRemoteMediator: PostRemoteMediator,
-    eventDao: EventDao,
+    private val eventDao: EventDao,
     eventRemoteMediator: EventRemoteMediator,
     userDao: UserDao,
     userRemoteMediator: UserRemoteMediator
@@ -223,6 +224,60 @@ class RepositoryImpl @Inject constructor(
                 error(response.code())
             }
             postDao.deletePost(id)
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    override suspend fun saveEvent(event: Event) {
+        try {
+            val response = apiService.eventsSaveEvent(event)
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+
+            val body = response.body() ?: error(response.code())
+            eventDao.insert(EventEntity.fromDto(body))
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    override suspend fun saveEventWithAttachment(event: Event, attachmentModel: AttachmentModel) {
+        try {
+            val mediaResponse = saveMedia(attachmentModel.file)
+            if (!mediaResponse.isSuccessful) {
+                error(mediaResponse.code())
+            }
+            val media = mediaResponse.body() ?: error(mediaResponse.message())
+
+            val response = apiService.eventsSaveEvent(
+                event.copy(
+                    attachment = Attachment(
+                        media.url,
+                        attachmentModel.attachmentType
+                    )
+                )
+            )
+
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+
+            val body = response.body() ?: error(response.message())
+            eventDao.insert(EventEntity.fromDto(body))
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    override suspend fun deleteEvent(id: Long) {
+        try {
+            val response = apiService.eventsDeleteEvent(id)
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+            eventDao.deleteEvent(id)
         } catch (e: Exception) {
             error(e)
         }

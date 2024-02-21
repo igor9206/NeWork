@@ -25,6 +25,14 @@ class PostRemoteMediator @Inject constructor(
     private val postRemoteKeyDao: PostRemoteKeyDao,
 ) : RemoteMediator<Int, PostEntity>() {
 
+    override suspend fun initialize(): InitializeAction {
+        return if (postDao.isEmpty()) {
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        }
+    }
+
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, PostEntity>
@@ -33,7 +41,12 @@ class PostRemoteMediator @Inject constructor(
         try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    apiService.postsGetLatestPage(state.config.pageSize)
+                    val id = postRemoteKeyDao.max()
+                    if (id != null) {
+                        apiService.postsGetAfterPost(id, state.config.pageSize)
+                    } else {
+                        apiService.postsGetLatestPage(state.config.pageSize)
+                    }
                 }
 
                 LoadType.PREPEND -> {

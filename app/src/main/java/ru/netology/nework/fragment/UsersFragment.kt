@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nework.R
 import ru.netology.nework.adapter.OnInteractionListener
-import ru.netology.nework.adapter.RecyclerViewAdapter
+import ru.netology.nework.adapter.UserAdapter
 import ru.netology.nework.databinding.FragmentUsersBinding
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.UserResponse
@@ -39,7 +39,7 @@ class UsersFragment : Fragment() {
         val arg = arguments?.getString("selectUser")
         val selectedUsers = mutableListOf<Long>()
 
-        val userAdapter = RecyclerViewAdapter(object : OnInteractionListener {
+        val userAdapter = UserAdapter(object : OnInteractionListener {
             override fun like(feedItem: FeedItem) {
                 TODO("Not yet implemented")
             }

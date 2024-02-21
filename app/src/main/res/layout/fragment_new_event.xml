@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.NewPostFragment">
+    tools:context=".fragment.NewEventFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/new_post_menu"
         app:navigationIcon="@drawable/ic_arrow_back_24"
-        app:title="New post" />
+        app:title="New event" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -31,14 +31,14 @@
             android:padding="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/textPost"
+                android:id="@+id/textEvent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@android:color/transparent"
                 android:gravity="top"
-                android:hint="Whats news?"
+                android:hint="Whats is event?"
                 android:inputType="textMultiLine"
-                tools:text="@tools:sample/lorem[100]" />
+                tools:text="@tools:sample/lorem[50]" />
 
             <FrameLayout
                 android:id="@+id/imageAttachmentContainer"
@@ -67,7 +67,6 @@
             </FrameLayout>
 
 
-
             <FrameLayout
                 android:id="@+id/mapContainer"
                 android:layout_width="match_parent"
@@ -91,6 +90,7 @@
 
 
         </LinearLayout>
+
 
     </ScrollView>
 
@@ -121,7 +121,7 @@
             android:src="@drawable/ic_attach_file_24" />
 
         <ImageView
-            android:id="@+id/addUsers"
+            android:id="@+id/addUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -140,5 +140,17 @@
 
     </LinearLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/buttonSetDate"
+        style="?attr/floatingActionButtonSmallStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/button_new_post"
+        app:elevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/bottomBar"
+        app:layout_constraintEnd_toEndOf="@id/bottomBar"
+        app:layout_constraintTop_toTopOf="@id/bottomBar"
+        app:srcCompat="@drawable/ic_add_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
