@@ -5,9 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
@@ -23,10 +27,10 @@ import ru.netology.nework.databinding.FragmentMapsBinding
 import ru.netology.nework.viewmodel.PostViewModel
 
 class MapsFragment : Fragment(), UserLocationObjectListener {
-    private val postViewModel: PostViewModel by activityViewModels()
     private lateinit var binding: FragmentMapsBinding
     private lateinit var userLocation: UserLocationLayer
     private var placeMark: PlacemarkMapObject? = null
+    private val gson = Gson()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,7 +65,10 @@ class MapsFragment : Fragment(), UserLocationObjectListener {
         binding.topAppBar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.save -> {
-                    postViewModel.setCoord(placeMark?.geometry)
+                    setFragmentResult(
+                        "mapsFragmentResult",
+                        bundleOf("point" to gson.toJson(placeMark?.geometry))
+                    )
                     findNavController().navigateUp()
                     true
                 }

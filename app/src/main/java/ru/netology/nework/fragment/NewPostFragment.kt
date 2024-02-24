@@ -16,8 +16,12 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.runtime.image.ImageProvider
@@ -34,6 +38,9 @@ class NewPostFragment : Fragment() {
     private lateinit var binding: FragmentNewPostBinding
     private val postViewModel: PostViewModel by activityViewModels()
     private var placeMark: PlacemarkMapObject? = null
+    private val gson = Gson()
+    private val pointToken = object : TypeToken<Point>() {}.type
+    private val usersToken = object : TypeToken<List<Long>>() {}.type
 
     private val startForPhotoResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -118,6 +125,12 @@ class NewPostFragment : Fragment() {
         binding.addLocation.setOnClickListener {
             findNavController().navigate(R.id.action_newPostFragment_to_mapsFragment)
         }
+        setFragmentResultListener("mapsFragmentResult") { _, bundle ->
+            val point = gson.fromJson<Point>(bundle.getString("point"), pointToken)
+            if (point != null) {
+                postViewModel.setCoord(point)
+            }
+        }
 
         binding.removeLocation.setOnClickListener {
             postViewModel.removeCoords()
@@ -128,6 +141,13 @@ class NewPostFragment : Fragment() {
                 R.id.action_newPostFragment_to_usersFragment2,
                 bundleOf("selectUser" to "selectUser")
             )
+        }
+        setFragmentResultListener("usersFragmentResult") { _, bundle ->
+            val selectedUsers =
+                gson.fromJson<List<Long>>(bundle.getString("selectedUsers"), usersToken)
+            if (selectedUsers != null) {
+                postViewModel.setMentionId(selectedUsers)
+            }
         }
 
 
@@ -153,8 +173,8 @@ class NewPostFragment : Fragment() {
 
         val imageProvider =
             ImageProvider.fromResource(requireContext(), R.drawable.ic_location_on_24)
-        postViewModel.coordData.observe(viewLifecycleOwner) { point ->
-            println(point?.longitude)
+        postViewModel.editedPost.observe(viewLifecycleOwner) { post ->
+            val point = if (post.coords != null) Point(post.coords.lat, post.coords.long) else null
             if (point != null) {
                 if (placeMark == null) {
                     placeMark = binding.map.mapWindow.map.mapObjects.addPlacemark()

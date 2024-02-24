@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
+import com.yandex.mapkit.geometry.Point
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,41 +70,32 @@ class EventViewModel @Inject constructor(
             }
         }.flowOn(Dispatchers.Default)
 
-    private val editedEvent = MutableLiveData(emptyEvent)
+    private val _editedEvent = MutableLiveData(emptyEvent)
+    val editedEvent: LiveData<Event> = _editedEvent
 
     private val _attachmentData: MutableLiveData<AttachmentModel?> = MutableLiveData(null)
 
     fun saveEvent(content: String) {
         val text = content.trim()
-        if (editedEvent.value?.content == text) {
-            editedEvent.value = emptyEvent
+        if (_editedEvent.value?.content == text) {
+            _editedEvent.value = emptyEvent
             return
         }
-        editedEvent.value = editedEvent.value?.copy(content = text)
-        editedEvent.value?.let {
+        _editedEvent.value = _editedEvent.value?.copy(content = text)
+        _editedEvent.value?.let {
             viewModelScope.launch {
                 val attachment = _attachmentData.value
-//                val coord = if (_coordData.value == null) null else Coordinates(
-//                    _coordData.value!!.latitude,
-//                    _coordData.value!!.longitude
-//                )
                 if (attachment == null) {
-                    repository.saveEvent(
-                        it.copy(
-                        )
-                    )
+                    repository.saveEvent(it)
                 } else {
                     repository.saveEventWithAttachment(
-                        it.copy(
-                        ), attachment
+                        it, attachment
                     )
                 }
             }
         }
-        editedEvent.value = emptyEvent
+        _editedEvent.value = emptyEvent
         _attachmentData.value = null
-//        _coordData.value = null
-//        _mentionIdData.value = emptyList()
     }
 
 
@@ -120,6 +112,26 @@ class EventViewModel @Inject constructor(
 
     fun deleteEvent(event: Event) = viewModelScope.launch {
         repository.deleteEvent(event.id)
+    }
+
+    fun setCoord(point: Point?) {
+        if (point != null) {
+            _editedEvent.value = _editedEvent.value?.copy(
+                coords = Coordinates(point.latitude, point.longitude)
+            )
+        }
+    }
+
+    fun removeCoords() {
+        _editedEvent.value = _editedEvent.value?.copy(
+            coords = null
+        )
+    }
+
+    fun setMentionId(selectedUsers: List<Long>) {
+        _editedEvent.value = _editedEvent.value?.copy(
+            speakerIds = selectedUsers
+        )
     }
 
 }

@@ -1,4 +1,4 @@
-package ru.netology.nework.adapter
+package ru.netology.nework.adapter.tools
 
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.UserResponse

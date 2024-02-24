@@ -71,54 +71,38 @@ class PostViewModel @Inject constructor(
             }
         }.flowOn(Dispatchers.Default)
 
-    private val editedPost = MutableLiveData(emptyPost)
+
+    private val _editedPost = MutableLiveData(emptyPost)
+    val editedPost: LiveData<Post> = _editedPost
 
     private val _attachmentData: MutableLiveData<AttachmentModel?> = MutableLiveData(null)
     val attachmentData: LiveData<AttachmentModel?>
         get() = _attachmentData
 
-    private val _coordData: MutableLiveData<Point?> = MutableLiveData(null)
-    val coordData: LiveData<Point?> = _coordData
-
-    private val _mentionIdData: MutableLiveData<List<Long>> = MutableLiveData(listOf())
-    val mentionIdData: LiveData<List<Long>?> = _mentionIdData
-
 
     fun savePost(content: String) {
         val text = content.trim()
-        if (editedPost.value?.content == text) {
-            editedPost.value = emptyPost
+        if (_editedPost.value?.content == text) {
+            _editedPost.value = emptyPost
             return
         }
-        editedPost.value = editedPost.value?.copy(content = text)
-        editedPost.value?.let {
+        _editedPost.value = _editedPost.value?.copy(content = text)
+        _editedPost.value?.let {
             viewModelScope.launch {
                 val attachment = _attachmentData.value
-                val coord = if (_coordData.value == null) null else Coordinates(
-                    _coordData.value!!.latitude,
-                    _coordData.value!!.longitude
-                )
                 if (attachment == null) {
                     repository.savePost(
-                        it.copy(
-                            coords = coord,
-                            mentionIds = _mentionIdData.value!!
-                        )
+                        it
                     )
                 } else {
                     repository.savePostWithAttachment(
-                        it.copy(
-                            coords = coord,
-                            mentionIds = _mentionIdData.value!!
-                        ), attachment
+                        it, attachment
                     )
                 }
             }
         }
-        editedPost.value = emptyPost
+        _editedPost.value = emptyPost
         _attachmentData.value = null
-        _coordData.value = null
-        _mentionIdData.value = emptyList()
     }
 
     fun deletePost(post: Post) = viewModelScope.launch {
@@ -130,7 +114,7 @@ class PostViewModel @Inject constructor(
     }
 
     fun edit(post: Post) {
-        editedPost.value = post
+        _editedPost.value = post
     }
 
     fun setAttachment(uri: Uri, file: File, attachmentType: AttachmentType) {
@@ -142,15 +126,23 @@ class PostViewModel @Inject constructor(
     }
 
     fun setCoord(point: Point?) {
-        _coordData.value = point
+        if (point != null) {
+            _editedPost.value = _editedPost.value?.copy(
+                coords = Coordinates(point.latitude, point.longitude)
+            )
+        }
     }
 
     fun removeCoords() {
-        _coordData.value = null
+        _editedPost.value = _editedPost.value?.copy(
+            coords = null
+        )
     }
 
-    fun setMentionId(selectedUsers: MutableList<Long>) {
-        _mentionIdData.value = selectedUsers
+    fun setMentionId(selectedUsers: List<Long>) {
+        _editedPost.value = _editedPost.value?.copy(
+            mentionIds = selectedUsers
+        )
     }
 
 }

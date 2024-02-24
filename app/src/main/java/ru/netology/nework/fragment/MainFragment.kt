@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
@@ -41,7 +42,10 @@ class MainFragment : Fragment() {
             when (menu.itemId) {
                 R.id.user -> {
                     if (token?.id != 0L && token?.id.toString().isNotEmpty()) {
-                        findNavController().navigate(R.id.action_mainFragment_to_detailUserFragment)
+                        findNavController().navigate(
+                            R.id.action_mainFragment_to_detailUserFragment,
+                            bundleOf("userId" to token?.id)
+                        )
                     } else {
                         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
                     }

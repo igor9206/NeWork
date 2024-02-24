@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -12,11 +13,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import androidx.paging.filter
+import androidx.paging.flatMap
+import androidx.paging.map
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nework.R
-import ru.netology.nework.adapter.OnInteractionListener
+import ru.netology.nework.adapter.tools.OnInteractionListener
 import ru.netology.nework.adapter.PostAdapter
 import ru.netology.nework.databinding.FragmentPostsBinding
 import ru.netology.nework.dto.FeedItem
@@ -45,6 +49,9 @@ class PostsFragment : Fragment() {
         authViewModel.dataAuth.observe(viewLifecycleOwner) { state ->
             token = state
         }
+
+        val userId = arguments?.getLong("userId")
+        println(userId)
 
         val postAdapter = PostAdapter(object : OnInteractionListener {
             override fun like(feedItem: FeedItem) {
@@ -77,7 +84,13 @@ class PostsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 postViewModel.data.collectLatest {
-                    postAdapter.submitData(it)
+                    if (userId != null) {
+                        postAdapter.submitData(it.filter { feedItem ->
+                            feedItem is Post && feedItem.authorId == userId
+                        })
+                    } else {
+                        postAdapter.submitData(it)
+                    }
                 }
             }
         }
@@ -93,6 +106,7 @@ class PostsFragment : Fragment() {
             postAdapter.refresh()
         }
 
+        binding.buttonNewPost.isVisible = userId == null
         binding.buttonNewPost.setOnClickListener {
             if (token?.id != 0L && token?.id.toString().isNotEmpty()) {
                 parentNavController?.navigate(R.id.action_mainFragment_to_newPostFragment)

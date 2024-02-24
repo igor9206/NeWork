@@ -8,13 +8,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.map.PlacemarkMapObject
+import com.yandex.runtime.image.ImageProvider
 import ru.netology.nework.R
 import ru.netology.nework.databinding.FragmentNewEventBinding
 import ru.netology.nework.dto.AttachmentType
@@ -25,6 +34,10 @@ import ru.netology.nework.viewmodel.EventViewModel
 class NewEventFragment : Fragment() {
     private lateinit var binding: FragmentNewEventBinding
     private val eventViewModel: EventViewModel by activityViewModels()
+    private val gson = Gson()
+    private val pointToken = object : TypeToken<Point>() {}.type
+    private val usersToken = object : TypeToken<List<Long>>() {}.type
+    private var placeMark: PlacemarkMapObject? = null
 
     private val startForPhotoResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -102,6 +115,39 @@ class NewEventFragment : Fragment() {
             eventViewModel.removeAttachment()
         }
 
+        binding.addFile.setOnClickListener {
+            pickVideo.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
+        }
+
+        binding.addLocation.setOnClickListener {
+            findNavController().navigate(R.id.action_newEventFragment_to_mapsFragment)
+        }
+        setFragmentResultListener("mapsFragmentResult") { _, bundle ->
+            val point = gson.fromJson<Point>(bundle.getString("point"), pointToken)
+            if (point != null) {
+                eventViewModel.setCoord(point)
+            }
+        }
+
+        binding.removeLocation.setOnClickListener {
+            eventViewModel.removeCoords()
+        }
+
+        binding.addUser.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_newEventFragment_to_usersFragment2,
+                bundleOf("selectUser" to "selectUser")
+            )
+        }
+        setFragmentResultListener("usersFragmentResult") { _, bundle ->
+            val selectedUsers =
+                gson.fromJson<List<Long>>(bundle.getString("selectedUsers"), usersToken)
+            if (selectedUsers != null) {
+                eventViewModel.setMentionId(selectedUsers)
+            }
+        }
+
+
         eventViewModel.attachmentData.observe(viewLifecycleOwner) { attachment ->
             when (attachment?.attachmentType) {
                 AttachmentType.IMAGE -> {
@@ -121,8 +167,41 @@ class NewEventFragment : Fragment() {
             }
         }
 
+        val imageProvider =
+            ImageProvider.fromResource(requireContext(), R.drawable.ic_location_on_24)
+
+        eventViewModel.editedEvent.observe(viewLifecycleOwner) { event ->
+            val point =
+                if (event.coords != null) Point(event.coords.lat, event.coords.long) else null
+            if (point != null) {
+                if (placeMark == null) {
+                    placeMark = binding.map.mapWindow.map.mapObjects.addPlacemark()
+                }
+                placeMark?.apply {
+                    geometry = point
+                    setIcon(imageProvider)
+                    isVisible = true
+                }
+                binding.map.mapWindow.map.move(
+                    CameraPosition(
+                        point,
+                        13.0f,
+                        0f,
+                        0f
+                    )
+                )
+            } else {
+                placeMark = null
+            }
+            binding.mapContainer.isVisible = placeMark != null
+        }
+
         binding.itemContainer.setOnClickListener {
             binding.textEvent.focusAndShowKeyboard()
+        }
+
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
         }
 
         return binding.root

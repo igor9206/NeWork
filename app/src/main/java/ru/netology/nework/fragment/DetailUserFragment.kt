@@ -22,7 +22,11 @@ class DetailUserFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDetailUserBinding.inflate(inflater, container, false)
-        pagerAdapter = PagerAdapter(this)
+
+        val userId = arguments?.getLong("userId")
+        println(userId)
+
+        pagerAdapter = PagerAdapter(this, userId)
         binding.pager.adapter = pagerAdapter
 
         binding.topAppBar.setNavigationOnClickListener {

@@ -1,4 +1,4 @@
-package ru.netology.nework.adapter
+package ru.netology.nework.adapter.tools
 
 import androidx.recyclerview.widget.DiffUtil
 import ru.netology.nework.dto.FeedItem

@@ -8,6 +8,8 @@ import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nework.R
+import ru.netology.nework.adapter.tools.FeedItemCallBack
+import ru.netology.nework.adapter.tools.OnInteractionListener
 import ru.netology.nework.databinding.CardEventBinding
 import ru.netology.nework.dto.Event
 import ru.netology.nework.dto.EventType
