@@ -4,6 +4,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import okhttp3.internal.userAgent
+import ru.netology.nework.fragment.JobsFragment
 import ru.netology.nework.fragment.PostsFragment
 
 class PagerAdapter(fragment: Fragment, private val userId: Long?) : FragmentStateAdapter(fragment) {
@@ -20,7 +21,9 @@ class PagerAdapter(fragment: Fragment, private val userId: Long?) : FragmentStat
             }
 
             1 -> {
-                PostsFragment()
+                JobsFragment.newInstance().apply {
+                    arguments = bundleOf("userId" to userId)
+                }
             }
 
             else -> {

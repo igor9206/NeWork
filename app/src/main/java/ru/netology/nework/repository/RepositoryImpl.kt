@@ -2,6 +2,8 @@ package ru.netology.nework.repository
 
 import android.content.Context
 import android.widget.Toast
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -23,6 +25,7 @@ import ru.netology.nework.dao.user.UserDao
 import ru.netology.nework.dto.Attachment
 import ru.netology.nework.dto.Event
 import ru.netology.nework.dto.FeedItem
+import ru.netology.nework.dto.Job
 import ru.netology.nework.dto.Media
 import ru.netology.nework.dto.Post
 import ru.netology.nework.entity.event.EventEntity
@@ -80,6 +83,10 @@ class RepositoryImpl @Inject constructor(
     ).flow.map {
         it.map(UserEntity::toDto)
     }
+
+    private var jobs = listOf<Job>()
+    private val _dataJob = MutableLiveData(jobs)
+    override val dataJob: LiveData<List<Job>> = _dataJob
 
     override suspend fun register(
         login: String,
@@ -278,6 +285,61 @@ class RepositoryImpl @Inject constructor(
                 error(response.code())
             }
             eventDao.deleteEvent(id)
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    override suspend fun getMyJobs() {
+        try {
+            val response = apiService.myJobGetAllJob()
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+            val body = response.body() ?: error(response.message())
+            jobs = body
+            _dataJob.value = jobs
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    override suspend fun getJobs(userId: Long) {
+        try {
+            val response = apiService.jobsGetAllJob(userId)
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+            val body = response.body() ?: error(response.message())
+            jobs = body
+            _dataJob.value = jobs
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    override suspend fun saveJob(job: Job) {
+        try {
+            val response = apiService.myJobSaveJob(job)
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+            val body = response.body() ?: error(response.message())
+            jobs = jobs + body
+            _dataJob.value = jobs
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    override suspend fun deleteJob(id: Long) {
+        try {
+            val response = apiService.myJobDeleteJob(id)
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+            jobs = jobs.filter { it.id != id }
+            _dataJob.value = jobs
         } catch (e: Exception) {
             error(e)
         }

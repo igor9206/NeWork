@@ -24,7 +24,6 @@ class DetailUserFragment : Fragment() {
         binding = FragmentDetailUserBinding.inflate(inflater, container, false)
 
         val userId = arguments?.getLong("userId")
-        println(userId)
 
         pagerAdapter = PagerAdapter(this, userId)
         binding.pager.adapter = pagerAdapter

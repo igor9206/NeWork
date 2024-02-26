@@ -51,7 +51,6 @@ class PostsFragment : Fragment() {
         }
 
         val userId = arguments?.getLong("userId")
-        println(userId)
 
         val postAdapter = PostAdapter(object : OnInteractionListener {
             override fun like(feedItem: FeedItem) {

@@ -1,11 +1,15 @@
 package ru.netology.nework.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import retrofit2.Response
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.dto.Event
 import ru.netology.nework.dto.FeedItem
+import ru.netology.nework.dto.Job
 import ru.netology.nework.dto.Post
 import ru.netology.nework.model.AttachmentModel
 import ru.netology.nework.model.AuthModel
@@ -15,6 +19,7 @@ interface Repository {
     val dataPost: Flow<PagingData<FeedItem>>
     val dataEvent: Flow<PagingData<FeedItem>>
     val dataUser: Flow<PagingData<FeedItem>>
+    val dataJob: LiveData<List<Job>>
     suspend fun register(
         login: String,
         name: String,
@@ -31,4 +36,9 @@ interface Repository {
     suspend fun saveEvent(event: Event)
     suspend fun saveEventWithAttachment(event: Event, attachmentModel: AttachmentModel)
     suspend fun deleteEvent(id: Long)
+
+    suspend fun getMyJobs()
+    suspend fun getJobs(userId: Long)
+    suspend fun saveJob(job: Job)
+    suspend fun deleteJob(id: Long)
 }
