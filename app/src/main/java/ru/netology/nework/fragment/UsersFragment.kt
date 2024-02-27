@@ -61,6 +61,7 @@ class UsersFragment : Fragment() {
                     selectedUsers.add(userResponse.id)
                 }
             }
+
         }, arg, selectedUsers)
         binding.recyclerViewUser.adapter = userAdapter
 

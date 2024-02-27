@@ -31,4 +31,8 @@
     <string name="save">save</string>
     <string name="preview">preview</string>
     <string name="remove">remove</string>
+    <string name="empty_login">Empty login</string>
+    <string name="empty_password">Empty password</string>
+    <string name="passwords_is_empty">Password is empty</string>
+    <string name="name_is_empty">Name is empty</string>
 </resources>

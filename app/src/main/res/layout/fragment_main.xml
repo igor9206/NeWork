@@ -8,9 +8,9 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
+        style="@style/Widget.Material3.AppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        android:background="?attr/colorSurfaceContainer"
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/top_bar_menu"
         app:title="@string/app_name" />
@@ -29,7 +29,6 @@
         style="@style/Widget.Material3.BottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="?attr/colorSurfaceContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
 
