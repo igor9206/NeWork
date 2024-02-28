@@ -24,6 +24,7 @@ import ru.netology.nework.adapter.UserAdapter
 import ru.netology.nework.databinding.FragmentUsersBinding
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.UserResponse
+import ru.netology.nework.util.AppKey
 import ru.netology.nework.viewmodel.UserViewModel
 
 @AndroidEntryPoint
@@ -38,7 +39,7 @@ class UsersFragment : Fragment() {
     ): View {
         binding = FragmentUsersBinding.inflate(inflater, container, false)
 
-        val arg = arguments?.getString("selectUser")
+        val arg = arguments?.getBoolean(AppKey.SELECT_USER) ?: false
         val selectedUsers = mutableListOf<Long>()
 
         val userAdapter = UserAdapter(object : OnInteractionListener {
@@ -67,7 +68,7 @@ class UsersFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userViewModel.dataUser.collectLatest {
+                userViewModel.dataUsers.collectLatest {
                     userAdapter.submitData(it)
                 }
             }
@@ -84,13 +85,13 @@ class UsersFragment : Fragment() {
             userAdapter.refresh()
         }
 
-        binding.topAppBar.isVisible = arg != null
+        binding.topAppBar.isVisible = arg
         binding.topAppBar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.save -> {
                     setFragmentResult(
-                        "usersFragmentResult",
-                        bundleOf("selectedUsers" to gson.toJson(selectedUsers))
+                        AppKey.USERS_FRAGMENT_RESULT,
+                        bundleOf(AppKey.SELECT_USER to gson.toJson(selectedUsers))
                     )
                     findNavController().navigateUp()
                     true

@@ -15,7 +15,6 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.gson.Gson
@@ -29,6 +28,7 @@ import ru.netology.nework.databinding.FragmentNewEventBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.util.AndroidUtils.focusAndShowKeyboard
+import ru.netology.nework.util.AppKey
 import ru.netology.nework.viewmodel.EventViewModel
 
 class NewEventFragment : Fragment() {
@@ -85,6 +85,11 @@ class NewEventFragment : Fragment() {
     ): View {
         binding = FragmentNewEventBinding.inflate(inflater, container, false)
 
+        val arg = arguments?.getString(AppKey.EDIT_EVENT)
+        if (arg != null) {
+            binding.textEvent.setText(arg)
+        }
+
         binding.topAppBar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.save -> {
@@ -122,8 +127,9 @@ class NewEventFragment : Fragment() {
         binding.addLocation.setOnClickListener {
             findNavController().navigate(R.id.action_newEventFragment_to_mapsFragment)
         }
-        setFragmentResultListener("mapsFragmentResult") { _, bundle ->
-            val point = gson.fromJson<Point>(bundle.getString("point"), pointToken)
+
+        setFragmentResultListener(AppKey.MAPS_FRAGMENT_RESULT) { _, bundle ->
+            val point = gson.fromJson<Point>(bundle.getString(AppKey.MAP_POINT), pointToken)
             if (point != null) {
                 eventViewModel.setCoord(point)
             }
@@ -136,12 +142,12 @@ class NewEventFragment : Fragment() {
         binding.addUser.setOnClickListener {
             findNavController().navigate(
                 R.id.action_newEventFragment_to_usersFragment2,
-                bundleOf("selectUser" to "selectUser")
+                bundleOf(AppKey.SELECT_USER to true)
             )
         }
-        setFragmentResultListener("usersFragmentResult") { _, bundle ->
+        setFragmentResultListener(AppKey.USERS_FRAGMENT_RESULT) { _, bundle ->
             val selectedUsers =
-                gson.fromJson<List<Long>>(bundle.getString("selectedUsers"), usersToken)
+                gson.fromJson<List<Long>>(bundle.getString(AppKey.SELECT_USER), usersToken)
             if (selectedUsers != null) {
                 eventViewModel.setMentionId(selectedUsers)
             }

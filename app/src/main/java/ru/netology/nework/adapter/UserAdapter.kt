@@ -13,8 +13,8 @@ import ru.netology.nework.dto.UserResponse
 
 class UserAdapter(
     private val onInteractionListener: OnInteractionListener,
-    private val selectUser: String?,
-    private val test: List<Long>? = null
+    private val selectUser: Boolean,
+    private val selectedUsers: List<Long>? = null
 ) : PagingDataAdapter<FeedItem, UserViewHolder>(FeedItemCallBack()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val binding =
@@ -24,7 +24,7 @@ class UserAdapter(
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         val item = getItem(position) as UserResponse
-        holder.bind(if (test?.firstOrNull { it == item.id } == null) item else item.copy(
+        holder.bind(if (selectedUsers?.firstOrNull { it == item.id } == null) item else item.copy(
             selected = true
         ))
     }
@@ -33,13 +33,13 @@ class UserAdapter(
 class UserViewHolder(
     private val binding: CardUserBinding,
     private val onInteractionListener: OnInteractionListener,
-    private val selectUser: String?
+    private val selectUser: Boolean
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(userResponse: UserResponse) {
-        println(userResponse)
         with(binding) {
             authorName.text = userResponse.name
-            checkBox.isVisible = selectUser != null
+            authorLogin.text = userResponse.login
+            checkBox.isVisible = selectUser
             checkBox.isChecked = userResponse.selected
 
             checkBox.setOnClickListener {

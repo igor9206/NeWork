@@ -28,6 +28,7 @@ import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Job
 import ru.netology.nework.dto.Media
 import ru.netology.nework.dto.Post
+import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.entity.event.EventEntity
 import ru.netology.nework.entity.post.PostEntity
 import ru.netology.nework.entity.user.UserEntity
@@ -76,7 +77,7 @@ class RepositoryImpl @Inject constructor(
             it.map(EventEntity::toDto)
         }
 
-    override val dataUser: Flow<PagingData<FeedItem>> = Pager(
+    override val dataUsers: Flow<PagingData<FeedItem>> = Pager(
         config = PagingConfig(pageSize = 4, enablePlaceholders = false),
         pagingSourceFactory = { userDao.pagingSource() },
         remoteMediator = userRemoteMediator
@@ -150,6 +151,19 @@ class RepositoryImpl @Inject constructor(
             appAuth.setAuth(body.id, body.token)
         } catch (e: Exception) {
             toastMsg("${context.getString(R.string.unknown_error)}: ${e.message}")
+        }
+    }
+
+    override suspend fun getUser(id: Long): UserResponse {
+        try {
+            val response = apiService.usersGetUser(id)
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+
+            return response.body() ?: error(response.code())
+        } catch (e: Exception) {
+            error(e)
         }
     }
 
@@ -237,6 +251,7 @@ class RepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveEvent(event: Event) {
+        println(event.id)
         try {
             val response = apiService.eventsSaveEvent(event)
             if (!response.isSuccessful) {
@@ -285,6 +300,30 @@ class RepositoryImpl @Inject constructor(
                 error(response.code())
             }
             eventDao.deleteEvent(id)
+        } catch (e: Exception) {
+            error(e)
+        }
+    }
+
+    override suspend fun likeEvent(event: Event) {
+        try {
+            val response = when (event.likedByMe) {
+                true -> {
+                    apiService.eventsUnLikeEvent(event.id)
+                }
+
+                else -> {
+                    apiService.eventsLikeEvent(event.id)
+                }
+            }
+
+            if (!response.isSuccessful) {
+                error(response.code())
+            }
+
+            val body = response.body() ?: error(response.code())
+
+            eventDao.insert(EventEntity.fromDto(body))
         } catch (e: Exception) {
             error(e)
         }

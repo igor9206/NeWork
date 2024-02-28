@@ -27,6 +27,11 @@ class PostAdapter(
     private val onInteractionListener: OnInteractionListener,
 ) : PagingDataAdapter<FeedItem, PostViewHolder>(FeedItemCallBack()) {
 
+    override fun onViewRecycled(holder: PostViewHolder) {
+        super.onViewRecycled(holder)
+        holder.releasePlayer()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding =
             CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -74,7 +79,9 @@ class PostViewHolder(
                     setMediaItem(MediaItem.fromUri(post.attachment.url))
                 }
             } else null
+
             audioContent.isVisible = post.attachment?.type == AttachmentType.AUDIO
+
             playPauseAudio.setOnClickListener {
                 if (player?.isPlaying == true) {
                     player!!.playWhenReady = !player!!.playWhenReady
@@ -85,6 +92,7 @@ class PostViewHolder(
                     }
                 }
             }
+
             player?.addListener(object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     binding.playPauseAudio.setIconResource(
@@ -124,4 +132,10 @@ class PostViewHolder(
 
         }
     }
+
+    fun releasePlayer() {
+        player?.stop()
+        player?.release()
+    }
+
 }

@@ -30,7 +30,7 @@ import ru.netology.nework.databinding.FragmentNewPostBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.util.AndroidUtils.focusAndShowKeyboard
-import ru.netology.nework.util.BundleKey
+import ru.netology.nework.util.AppKey
 import ru.netology.nework.viewmodel.PostViewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -89,7 +89,7 @@ class NewPostFragment : Fragment() {
     ): View {
         binding = FragmentNewPostBinding.inflate(inflater, container, false)
 
-        val arg = arguments?.getString(BundleKey.EDIT_POST)
+        val arg = arguments?.getString(AppKey.EDIT_POST)
         if (arg != null) {
             binding.textPost.setText(arg)
         }

@@ -25,7 +25,7 @@ import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
 import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.model.AuthModel
-import ru.netology.nework.util.BundleKey
+import ru.netology.nework.util.AppKey
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.PostViewModel
 
@@ -48,7 +48,7 @@ class PostsFragment : Fragment() {
             token = state
         }
 
-        val userId = arguments?.getLong(BundleKey.USER_ID)
+        val userId = arguments?.getLong(AppKey.USER_ID)
 
         val postAdapter = PostAdapter(object : OnInteractionListener {
 
@@ -69,7 +69,7 @@ class PostsFragment : Fragment() {
                 postViewModel.edit(feedItem)
                 parentNavController?.navigate(
                     R.id.action_mainFragment_to_newPostFragment,
-                    bundleOf(BundleKey.EDIT_POST to feedItem.content)
+                    bundleOf(AppKey.EDIT_POST to feedItem.content)
                 )
             }
 

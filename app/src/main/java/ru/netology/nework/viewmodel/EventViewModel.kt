@@ -22,10 +22,13 @@ import ru.netology.nework.dto.Coordinates
 import ru.netology.nework.dto.Event
 import ru.netology.nework.dto.EventType
 import ru.netology.nework.dto.FeedItem
+import ru.netology.nework.dto.Post
 import ru.netology.nework.model.AttachmentModel
 import ru.netology.nework.repository.Repository
 import java.io.File
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 val emptyEvent = Event(
@@ -62,7 +65,12 @@ class EventViewModel @Inject constructor(
             repository.dataEvent.map {
                 it.map { feedItem ->
                     if (feedItem is Event) {
-                        feedItem.copy(ownedByMe = auth.id == feedItem.authorId)
+                        feedItem.copy(
+                            ownedByMe = auth.id == feedItem.authorId,
+                            likedByMe = !feedItem.likeOwnerIds.none { id ->
+                                id == auth.id
+                            }
+                        )
                     } else {
                         feedItem
                     }
@@ -131,6 +139,26 @@ class EventViewModel @Inject constructor(
     fun setMentionId(selectedUsers: List<Long>) {
         _editedEvent.value = _editedEvent.value?.copy(
             speakerIds = selectedUsers
+        )
+    }
+
+    fun like(event: Event) = viewModelScope.launch {
+        repository.likeEvent(event)
+    }
+
+    fun edit(event: Event) {
+        _editedEvent.value = event
+    }
+
+    fun setDateTime(date: OffsetDateTime) {
+        _editedEvent.value = _editedEvent.value?.copy(
+            datetime = date
+        )
+    }
+
+    fun setEventType(eventType: EventType) {
+        _editedEvent.value = _editedEvent.value?.copy(
+            type = eventType
         )
     }
 

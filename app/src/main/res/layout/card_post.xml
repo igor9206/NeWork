@@ -80,7 +80,8 @@
                 android:scaleType="fitCenter"
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/barrierTop"
-                tools:src="@tools:sample/avatars" />
+                tools:src="@tools:sample/avatars"
+                tools:visibility="gone" />
 
             <androidx.media3.ui.PlayerView
                 android:id="@+id/videoContent"

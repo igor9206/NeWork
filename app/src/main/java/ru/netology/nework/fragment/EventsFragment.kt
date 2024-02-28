@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -23,13 +24,14 @@ import ru.netology.nework.dto.Event
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.model.AuthModel
+import ru.netology.nework.util.AppKey
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.EventViewModel
 
 @AndroidEntryPoint
 class EventsFragment : Fragment() {
     private lateinit var binding: FragmentEventsBinding
-    private val eventViewModel: EventViewModel by viewModels()
+    private val eventViewModel: EventViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -46,7 +48,11 @@ class EventsFragment : Fragment() {
 
         val eventAdapter = EventAdapter(object : OnInteractionListener {
             override fun like(feedItem: FeedItem) {
-                TODO("Not yet implemented")
+                if (token?.id != 0L && token?.id.toString().isNotEmpty()) {
+                    eventViewModel.like(feedItem as Event)
+                } else {
+                    parentNavController?.navigate(R.id.action_mainFragment_to_loginFragment)
+                }
             }
 
             override fun delete(feedItem: FeedItem) {
@@ -54,7 +60,12 @@ class EventsFragment : Fragment() {
             }
 
             override fun edit(feedItem: FeedItem) {
-                TODO("Not yet implemented")
+                feedItem as Event
+                eventViewModel.edit(feedItem)
+                parentNavController?.navigate(
+                    R.id.action_mainFragment_to_newEventFragment,
+                    bundleOf(AppKey.EDIT_EVENT to feedItem.content)
+                )
             }
 
             override fun selectUser(userResponse: UserResponse) {
@@ -66,7 +77,6 @@ class EventsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 eventViewModel.data.collectLatest {
-                    println(it)
                     eventAdapter.submitData(it)
                 }
             }

@@ -47,12 +47,15 @@ class EventViewHolder(
             typeEvent.text = event.type.toString()
             dateEvent.text = event.datetime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
             buttonLike.text = event.likeOwnerIds.size.toString()
+            buttonLike.isChecked = event.likedByMe
 
             buttonPlayEvent.isVisible = event.type == EventType.ONLINE
             buttonOption.isVisible = event.ownedByMe
 
             imageContent.loadAttachment(event.attachment?.url.toString())
             imageContent.isVisible = event.attachment != null
+
+            buttonGroup.text = event.speakerIds.size.toString()
 
             buttonOption.setOnClickListener {
                 PopupMenu(it.context, it).apply {
@@ -75,6 +78,10 @@ class EventViewHolder(
                     gravity = Gravity.END
                 }
                     .show()
+            }
+
+            buttonLike.setOnClickListener {
+                onInteractionListener.like(event)
             }
 
 
