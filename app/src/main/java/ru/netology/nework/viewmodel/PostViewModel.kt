@@ -75,6 +75,8 @@ class PostViewModel @Inject constructor(
     private val _editedPost = MutableLiveData(emptyPost)
     val editedPost: LiveData<Post> = _editedPost
 
+    val postData = MutableLiveData<Post>()
+
     private val _attachmentData: MutableLiveData<AttachmentModel?> = MutableLiveData(null)
     val attachmentData: LiveData<AttachmentModel?>
         get() = _attachmentData
@@ -143,6 +145,10 @@ class PostViewModel @Inject constructor(
         _editedPost.value = _editedPost.value?.copy(
             mentionIds = selectedUsers
         )
+    }
+
+    fun openPost(post: Post) {
+        postData.value = post
     }
 
 }

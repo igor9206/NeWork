@@ -28,6 +28,8 @@ interface Repository {
 
     suspend fun login(login: String, pass: String)
 
+    fun logout()
+
     suspend fun getUser(id: Long): UserResponse
     suspend fun like(post: Post)
     suspend fun savePost(post: Post)

@@ -1,4 +1,4 @@
-package ru.netology.nework.fragment
+package ru.netology.nework.fragment.item
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.R
 import ru.netology.nework.databinding.CardJobBinding
 import ru.netology.nework.databinding.FragmentJobsBinding
+import ru.netology.nework.util.AppKey
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.JobViewModel
 import java.time.format.DateTimeFormatter
@@ -29,7 +30,7 @@ class JobsFragment : Fragment() {
     ): View {
         binding = FragmentJobsBinding.inflate(inflater, container, false)
 
-        val userId = arguments?.getLong("userId")
+        val userId = arguments?.getLong(AppKey.USER_ID)
         jobViewModel.getJobs(userId)
 
         binding.buttonNewJob.isVisible = userId == authViewModel.dataAuth.value?.id
@@ -46,6 +47,7 @@ class JobsFragment : Fragment() {
                     }
                     position.text = job.position
 
+                    buttonRemoveJob.isVisible = userId == authViewModel.dataAuth.value?.id
                     buttonRemoveJob.setOnClickListener {
                         jobViewModel.deleteJob(job.id)
                     }

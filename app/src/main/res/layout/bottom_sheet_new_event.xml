@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
 
     android:layout_height="wrap_content"
-    tools:context=".fragment.BottomSheetNewEvent">
+    tools:context=".fragment.dialog.BottomSheetNewEvent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

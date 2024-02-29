@@ -1,4 +1,4 @@
-package ru.netology.nework.adapter
+package ru.netology.nework.adapter.recyclerview
 
 import android.view.Gravity
 import android.view.LayoutInflater

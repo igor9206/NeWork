@@ -154,6 +154,10 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
+    override fun logout() {
+        appAuth.removeAuth()
+    }
+
     override suspend fun getUser(id: Long): UserResponse {
         try {
             val response = apiService.usersGetUser(id)

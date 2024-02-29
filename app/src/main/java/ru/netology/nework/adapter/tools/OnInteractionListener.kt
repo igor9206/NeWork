@@ -8,4 +8,5 @@ interface OnInteractionListener {
     fun delete(feedItem: FeedItem)
     fun edit(feedItem: FeedItem)
     fun selectUser(userResponse: UserResponse)
+    fun openCard(feedItem: FeedItem)
 }

@@ -1,6 +1,7 @@
 package ru.netology.nework.util
 
 object AppKey {
+    const val POST_ID = "postId"
     const val USERS_FRAGMENT_RESULT = "usersFragmentResult"
     const val SELECT_USER = "selectUser"
     const val MAP_POINT = "point"

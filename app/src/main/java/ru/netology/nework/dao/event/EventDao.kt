@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ru.netology.nework.entity.event.EventEntity
-import ru.netology.nework.entity.post.PostEntity
 
 @Dao
 interface EventDao {

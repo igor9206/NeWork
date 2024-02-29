@@ -1,4 +1,4 @@
-package ru.netology.nework.fragment
+package ru.netology.nework.fragment.item
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -17,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nework.R
-import ru.netology.nework.adapter.EventAdapter
+import ru.netology.nework.adapter.recyclerview.EventAdapter
 import ru.netology.nework.adapter.tools.OnInteractionListener
 import ru.netology.nework.databinding.FragmentEventsBinding
 import ru.netology.nework.dto.Event
@@ -69,6 +68,10 @@ class EventsFragment : Fragment() {
             }
 
             override fun selectUser(userResponse: UserResponse) {
+                TODO("Not yet implemented")
+            }
+
+            override fun openCard(feedItem: FeedItem) {
                 TODO("Not yet implemented")
             }
         })

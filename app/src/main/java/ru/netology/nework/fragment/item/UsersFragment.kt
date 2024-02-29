@@ -1,4 +1,4 @@
-package ru.netology.nework.fragment
+package ru.netology.nework.fragment.item
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nework.R
 import ru.netology.nework.adapter.tools.OnInteractionListener
-import ru.netology.nework.adapter.UserAdapter
+import ru.netology.nework.adapter.recyclerview.UserAdapter
 import ru.netology.nework.databinding.FragmentUsersBinding
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.UserResponse
@@ -38,22 +38,15 @@ class UsersFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentUsersBinding.inflate(inflater, container, false)
+        val parentNavController = parentFragment?.parentFragment?.findNavController()
 
         val arg = arguments?.getBoolean(AppKey.SELECT_USER) ?: false
         val selectedUsers = mutableListOf<Long>()
 
         val userAdapter = UserAdapter(object : OnInteractionListener {
-            override fun like(feedItem: FeedItem) {
-                TODO("Not yet implemented")
-            }
-
-            override fun delete(feedItem: FeedItem) {
-                TODO("Not yet implemented")
-            }
-
-            override fun edit(feedItem: FeedItem) {
-                TODO("Not yet implemented")
-            }
+            override fun like(feedItem: FeedItem) {}
+            override fun delete(feedItem: FeedItem) {}
+            override fun edit(feedItem: FeedItem) {}
 
             override fun selectUser(userResponse: UserResponse) {
                 if (selectedUsers.contains(userResponse.id)) {
@@ -61,6 +54,13 @@ class UsersFragment : Fragment() {
                 } else {
                     selectedUsers.add(userResponse.id)
                 }
+            }
+
+            override fun openCard(feedItem: FeedItem) {
+                parentNavController?.navigate(
+                    R.id.action_mainFragment_to_detailUserFragment,
+                    bundleOf(AppKey.USER_ID to feedItem.id)
+                )
             }
 
         }, arg, selectedUsers)

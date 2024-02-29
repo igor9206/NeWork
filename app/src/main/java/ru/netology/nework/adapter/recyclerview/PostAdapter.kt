@@ -1,4 +1,4 @@
-package ru.netology.nework.adapter
+package ru.netology.nework.adapter.recyclerview
 
 import android.content.Context
 import android.view.Gravity
@@ -9,7 +9,6 @@ import androidx.core.view.isVisible
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.SimpleExoPlayer
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nework.R
@@ -127,6 +126,10 @@ class PostViewHolder(
                     gravity = Gravity.END
                 }
                     .show()
+            }
+
+            binding.cardPost.setOnClickListener {
+                onInteractionListener.openCard(post)
             }
 
 

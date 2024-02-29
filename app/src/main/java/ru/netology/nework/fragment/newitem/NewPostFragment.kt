@@ -1,8 +1,9 @@
-package ru.netology.nework.fragment
+package ru.netology.nework.fragment.newitem
 
 import android.app.Activity
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -24,20 +26,22 @@ import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.runtime.image.ImageProvider
 import ru.netology.nework.R
-import ru.netology.nework.databinding.FragmentNewEventBinding
+import ru.netology.nework.databinding.FragmentNewPostBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.util.AndroidUtils.focusAndShowKeyboard
 import ru.netology.nework.util.AppKey
-import ru.netology.nework.viewmodel.EventViewModel
+import ru.netology.nework.viewmodel.PostViewModel
+import java.io.File
+import java.io.FileOutputStream
 
-class NewEventFragment : Fragment() {
-    private lateinit var binding: FragmentNewEventBinding
-    private val eventViewModel: EventViewModel by activityViewModels()
+class NewPostFragment : Fragment() {
+    private lateinit var binding: FragmentNewPostBinding
+    private val postViewModel: PostViewModel by activityViewModels()
+    private var placeMark: PlacemarkMapObject? = null
     private val gson = Gson()
     private val pointToken = object : TypeToken<Point>() {}.type
     private val usersToken = object : TypeToken<List<Long>>() {}.type
-    private var placeMark: PlacemarkMapObject? = null
 
     private val startForPhotoResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -48,7 +52,7 @@ class NewEventFragment : Fragment() {
                     val fileUri = data?.data!!
                     val file = fileUri.toFile()
 
-                    eventViewModel.setAttachment(fileUri, file, AttachmentType.IMAGE)
+                    postViewModel.setAttachment(fileUri, file, AttachmentType.IMAGE)
                 }
 
                 ImagePicker.RESULT_ERROR -> {
@@ -71,7 +75,7 @@ class NewEventFragment : Fragment() {
                     Toast.makeText(requireContext(), "attachment > 15MB", Toast.LENGTH_SHORT).show()
                     return@registerForActivityResult
                 }
-                eventViewModel.setAttachment(
+                postViewModel.setAttachment(
                     uri,
                     file,
                     AttachmentType.VIDEO
@@ -83,28 +87,23 @@ class NewEventFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentNewEventBinding.inflate(inflater, container, false)
+        binding = FragmentNewPostBinding.inflate(inflater, container, false)
 
-        val arg = arguments?.getString(AppKey.EDIT_EVENT)
+        val arg = arguments?.getString(AppKey.EDIT_POST)
         if (arg != null) {
-            binding.textEvent.setText(arg)
+            binding.textPost.setText(arg)
         }
 
         binding.topAppBar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.save -> {
-                    eventViewModel.saveEvent(binding.textEvent.text.toString())
+                    postViewModel.savePost(binding.textPost.text.toString())
                     findNavController().navigateUp()
                     true
                 }
 
                 else -> false
             }
-        }
-
-        val bottomSheetNewEvent = BottomSheetNewEvent()
-        binding.buttonSetDate.setOnClickListener {
-            bottomSheetNewEvent.show(parentFragmentManager, BottomSheetNewEvent.TAG)
         }
 
         binding.addPhoto.setOnClickListener {
@@ -116,32 +115,31 @@ class NewEventFragment : Fragment() {
                 }
         }
 
-        binding.removeImageAttachment.setOnClickListener {
-            eventViewModel.removeAttachment()
-        }
-
         binding.addFile.setOnClickListener {
             pickVideo.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
         }
 
-        binding.addLocation.setOnClickListener {
-            findNavController().navigate(R.id.action_newEventFragment_to_mapsFragment)
+        binding.removeImageAttachment.setOnClickListener {
+            postViewModel.removePhoto()
         }
 
+        binding.addLocation.setOnClickListener {
+            findNavController().navigate(R.id.action_newPostFragment_to_mapsFragment)
+        }
         setFragmentResultListener(AppKey.MAPS_FRAGMENT_RESULT) { _, bundle ->
             val point = gson.fromJson<Point>(bundle.getString(AppKey.MAP_POINT), pointToken)
             if (point != null) {
-                eventViewModel.setCoord(point)
+                postViewModel.setCoord(point)
             }
         }
 
         binding.removeLocation.setOnClickListener {
-            eventViewModel.removeCoords()
+            postViewModel.removeCoords()
         }
 
-        binding.addUser.setOnClickListener {
+        binding.addUsers.setOnClickListener {
             findNavController().navigate(
-                R.id.action_newEventFragment_to_usersFragment2,
+                R.id.action_newPostFragment_to_usersFragment2,
                 bundleOf(AppKey.SELECT_USER to true)
             )
         }
@@ -149,17 +147,17 @@ class NewEventFragment : Fragment() {
             val selectedUsers =
                 gson.fromJson<List<Long>>(bundle.getString(AppKey.SELECT_USER), usersToken)
             if (selectedUsers != null) {
-                eventViewModel.setMentionId(selectedUsers)
+                postViewModel.setMentionId(selectedUsers)
             }
         }
 
 
-        eventViewModel.attachmentData.observe(viewLifecycleOwner) { attachment ->
+        postViewModel.attachmentData.observe(viewLifecycleOwner) { attachment ->
             when (attachment?.attachmentType) {
                 AttachmentType.IMAGE -> {
                     binding.imageAttachment.loadAttachment(attachment.uri.toString())
-                    binding.imageAttachmentContainer.isVisible = true
                     binding.imageAttachment.isVisible = true
+                    binding.imageAttachmentContainer.isVisible = true
                 }
 
                 AttachmentType.VIDEO -> {
@@ -168,6 +166,7 @@ class NewEventFragment : Fragment() {
 
                 AttachmentType.AUDIO -> {}
                 null -> {
+                    binding.imageAttachment.isVisible = false
                     binding.imageAttachmentContainer.isVisible = false
                 }
             }
@@ -175,10 +174,8 @@ class NewEventFragment : Fragment() {
 
         val imageProvider =
             ImageProvider.fromResource(requireContext(), R.drawable.ic_location_on_24)
-
-        eventViewModel.editedEvent.observe(viewLifecycleOwner) { event ->
-            val point =
-                if (event.coords != null) Point(event.coords.lat, event.coords.long) else null
+        postViewModel.editedPost.observe(viewLifecycleOwner) { post ->
+            val point = if (post.coords != null) Point(post.coords.lat, post.coords.long) else null
             if (point != null) {
                 if (placeMark == null) {
                     placeMark = binding.map.mapWindow.map.mapObjects.addPlacemark()
@@ -203,7 +200,7 @@ class NewEventFragment : Fragment() {
         }
 
         binding.itemContainer.setOnClickListener {
-            binding.textEvent.focusAndShowKeyboard()
+            binding.textPost.focusAndShowKeyboard()
         }
 
         binding.topAppBar.setNavigationOnClickListener {
@@ -213,4 +210,18 @@ class NewEventFragment : Fragment() {
         return binding.root
     }
 
+}
+
+
+fun Uri.toFile(context: Context): File? {
+    val inputStream = context.contentResolver.openInputStream(this)
+    val tempFile = File.createTempFile("temp", ".jpg")
+
+    val outputStream = FileOutputStream(tempFile)
+    inputStream?.use { input ->
+        outputStream.use { output ->
+            input.copyTo(output)
+        }
+    }
+    return tempFile
 }

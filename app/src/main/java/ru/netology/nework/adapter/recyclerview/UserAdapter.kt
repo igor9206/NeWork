@@ -1,4 +1,4 @@
-package ru.netology.nework.adapter
+package ru.netology.nework.adapter.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,6 +10,7 @@ import ru.netology.nework.adapter.tools.OnInteractionListener
 import ru.netology.nework.databinding.CardUserBinding
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.UserResponse
+import ru.netology.nework.extension.loadAvatar
 
 class UserAdapter(
     private val onInteractionListener: OnInteractionListener,
@@ -39,11 +40,16 @@ class UserViewHolder(
         with(binding) {
             authorName.text = userResponse.name
             authorLogin.text = userResponse.login
+            authorAvatar.loadAvatar(userResponse.avatar)
             checkBox.isVisible = selectUser
             checkBox.isChecked = userResponse.selected
 
             checkBox.setOnClickListener {
                 onInteractionListener.selectUser(userResponse)
+            }
+
+            cardUser.setOnClickListener {
+                onInteractionListener.openCard(userResponse)
             }
         }
     }

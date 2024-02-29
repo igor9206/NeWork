@@ -1,4 +1,4 @@
-package ru.netology.nework.fragment
+package ru.netology.nework.fragment.authorisation
 
 import android.os.Bundle
 import android.view.LayoutInflater

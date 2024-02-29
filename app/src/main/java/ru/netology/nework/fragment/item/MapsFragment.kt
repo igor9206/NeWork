@@ -1,4 +1,4 @@
-package ru.netology.nework.fragment
+package ru.netology.nework.fragment.item
 
 import android.graphics.PointF
 import android.os.Bundle
@@ -7,11 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.ObjectEvent
@@ -24,7 +22,6 @@ import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.image.ImageProvider
 import ru.netology.nework.R
 import ru.netology.nework.databinding.FragmentMapsBinding
-import ru.netology.nework.viewmodel.PostViewModel
 
 class MapsFragment : Fragment(), UserLocationObjectListener {
     private lateinit var binding: FragmentMapsBinding

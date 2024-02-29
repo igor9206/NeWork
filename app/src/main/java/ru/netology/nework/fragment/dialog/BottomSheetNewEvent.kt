@@ -1,6 +1,5 @@
-package ru.netology.nework.fragment
+package ru.netology.nework.fragment.dialog
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +7,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ru.netology.nework.R
 import ru.netology.nework.databinding.BottomSheetNewEventBinding
-import ru.netology.nework.databinding.FragmentNewEventBinding
 import ru.netology.nework.dto.EventType
 import ru.netology.nework.viewmodel.EventViewModel
 import java.time.OffsetDateTime
@@ -35,11 +32,13 @@ class BottomSheetNewEvent : BottomSheetDialogFragment() {
             date = it.toString().trim().split(" ")
         }
 
+        binding.radioButtonOnline.isChecked = true
         binding.radioGroup.setOnCheckedChangeListener { _, id ->
-            when(id){
-                (R.id.radioButtonOnline)-> {
+            when (id) {
+                (R.id.radioButtonOnline) -> {
                     eventViewModel.setEventType(EventType.ONLINE)
                 }
+
                 else -> {
                     eventViewModel.setEventType(EventType.OFFLINE)
                 }

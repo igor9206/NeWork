@@ -43,4 +43,8 @@ class AuthViewModel @Inject constructor(
     fun setPhoto(uri: Uri, file: File) {
         _photoData.value = AttachmentModel(AttachmentType.IMAGE, uri, file)
     }
+
+    fun logout() {
+        repository.logout()
+    }
 }

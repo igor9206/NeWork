@@ -1,4 +1,4 @@
-package ru.netology.nework.fragment
+package ru.netology.nework.fragment.item
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.netology.nework.R
-import ru.netology.nework.adapter.PostAdapter
+import ru.netology.nework.adapter.recyclerview.PostAdapter
 import ru.netology.nework.adapter.tools.OnInteractionListener
 import ru.netology.nework.databinding.FragmentPostsBinding
 import ru.netology.nework.dto.FeedItem
@@ -51,7 +51,6 @@ class PostsFragment : Fragment() {
         val userId = arguments?.getLong(AppKey.USER_ID)
 
         val postAdapter = PostAdapter(object : OnInteractionListener {
-
             override fun like(feedItem: FeedItem) {
                 if (token?.id != 0L && token?.id.toString().isNotEmpty()) {
                     postViewModel.like(feedItem as Post)
@@ -73,8 +72,11 @@ class PostsFragment : Fragment() {
                 )
             }
 
-            override fun selectUser(userResponse: UserResponse) {
-                TODO("Not yet implemented")
+            override fun selectUser(userResponse: UserResponse) {}
+
+            override fun openCard(feedItem: FeedItem) {
+                postViewModel.openPost(feedItem as Post)
+                parentNavController?.navigate(R.id.action_mainFragment_to_detailPostFragment)
             }
         })
 
