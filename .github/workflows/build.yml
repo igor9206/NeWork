@@ -9,7 +9,7 @@ on:
 jobs:
 
   build:
-  
+
     runs-on: ubuntu-latest
 
     steps:
@@ -22,19 +22,21 @@ jobs:
         with:
           java-version: 17
 
-      - name: Decode nework.properties
+      - name: Decode nework properties
         env:
-          API_KEY_SECRET: ${{ secrets.API_KEY_SECRET }}
-          MAP_KIT_API_KEY: ${{ secrets.MAP_KIT_API_KEY }}
-        run: echo $FIREBASE_SECRET > ./nework.properties
+          API_KEY: ${{ secrets.API_KEY }}
+          MAPKIT_API_KEY: ${{ secrets.MAPKIT_API_KEY }}
+        run: |
+          echo "API_KEY=${API_KEY}" > nework.properties
+          echo "MAPKIT_API_KEY=${MAPKIT_API_KEY}" >> nework.properties
 
       - name: Build
         run: |
           chmod +x ./gradlew
           ./gradlew build
-          
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: app-debug.apk
-          path: app/build/outputs/apk/debug/app-debug.apk      
+          path: app/build/outputs/apk/debug/app-debug.apk

@@ -29,11 +29,11 @@ android {
         if (file.exists()) {
             properties.load(file.inputStream())
         }
-        buildConfigField("String", "API_KEY", properties.getProperty("API_KEY", ""))
+        buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY", "")}\"")
         buildConfigField(
             "String",
             "MAPKIT_API_KEY",
-            properties.getProperty("MAPKIT_API_KEY", "")
+            "\"${properties.getProperty("MAPKIT_API_KEY", "")}\""
         )
     }
 
