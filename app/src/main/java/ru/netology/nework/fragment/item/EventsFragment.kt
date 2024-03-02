@@ -72,7 +72,8 @@ class EventsFragment : Fragment() {
             }
 
             override fun openCard(feedItem: FeedItem) {
-                TODO("Not yet implemented")
+                eventViewModel.openEvent(feedItem as Event)
+                parentNavController?.navigate(R.id.action_mainFragment_to_detailEventFragment)
             }
         })
 

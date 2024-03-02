@@ -8,9 +8,11 @@
     android:layout_marginVertical="4dp">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardEvent"
         style="@style/Widget.AppTheme.CardView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clickable="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

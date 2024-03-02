@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragment.detail.DetailPostFragment">
+    tools:context=".fragment.detailitem.DetailPostFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
@@ -192,6 +192,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:paddingBottom="16dp"
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/mentionedGroup" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

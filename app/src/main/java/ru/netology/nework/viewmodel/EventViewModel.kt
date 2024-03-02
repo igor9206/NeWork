@@ -78,6 +78,8 @@ class EventViewModel @Inject constructor(
             }
         }.flowOn(Dispatchers.Default)
 
+    val eventData = MutableLiveData<Event>()
+
     private val _editedEvent = MutableLiveData(emptyEvent)
     val editedEvent: LiveData<Event> = _editedEvent
 
@@ -162,5 +164,8 @@ class EventViewModel @Inject constructor(
         )
     }
 
+    fun openEvent(event: Event) {
+        eventData.value = event
+    }
 }
 

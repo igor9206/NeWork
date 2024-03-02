@@ -1,4 +1,4 @@
-package ru.netology.nework.fragment.detail
+package ru.netology.nework.fragment.detailitem
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -17,10 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.R
 import ru.netology.nework.databinding.FragmentDetailPostBinding
 import ru.netology.nework.dto.AttachmentType
-import ru.netology.nework.dto.Post
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.extension.loadAvatar
-import ru.netology.nework.util.AppKey
 import ru.netology.nework.viewmodel.PostViewModel
 import java.time.format.DateTimeFormatter
 

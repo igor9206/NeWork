@@ -84,6 +84,10 @@ class EventViewHolder(
                 onInteractionListener.like(event)
             }
 
+            cardEvent.setOnClickListener {
+                onInteractionListener.openCard(event)
+            }
+
 
         }
     }

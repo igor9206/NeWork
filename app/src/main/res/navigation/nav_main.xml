@@ -29,6 +29,9 @@
         <action
             android:id="@+id/action_mainFragment_to_detailPostFragment"
             app:destination="@id/detailPostFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_detailEventFragment"
+            app:destination="@id/detailEventFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -48,7 +51,7 @@
         tools:layout="@layout/fragment_register" />
     <fragment
         android:id="@+id/detailUserFragment"
-        android:name="ru.netology.nework.fragment.detail.DetailUserFragment"
+        android:name="ru.netology.nework.fragment.detailitem.DetailUserFragment"
         android:label="fragment_detail_user"
         tools:layout="@layout/fragment_detail_user" >
         <action
@@ -96,7 +99,12 @@
         tools:layout="@layout/fragment_new_job" />
     <fragment
         android:id="@+id/detailPostFragment"
-        android:name="ru.netology.nework.fragment.detail.DetailPostFragment"
+        android:name="ru.netology.nework.fragment.detailitem.DetailPostFragment"
         android:label="fragment_detail_post"
         tools:layout="@layout/fragment_detail_post" />
+    <fragment
+        android:id="@+id/detailEventFragment"
+        android:name="ru.netology.nework.fragment.detailitem.DetailEventFragment"
+        android:label="fragment_detail_event"
+        tools:layout="@layout/fragment_detail_event" />
 </navigation>
