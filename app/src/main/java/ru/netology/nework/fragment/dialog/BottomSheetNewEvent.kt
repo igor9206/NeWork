@@ -17,7 +17,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class BottomSheetNewEvent : BottomSheetDialogFragment() {
-    private lateinit var binding: BottomSheetNewEventBinding
     private val eventViewModel: EventViewModel by activityViewModels()
     private var date = listOf<String>()
 
@@ -26,7 +25,7 @@ class BottomSheetNewEvent : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = BottomSheetNewEventBinding.inflate(inflater, container, false)
+        val binding = BottomSheetNewEventBinding.inflate(inflater, container, false)
 
         binding.dateTextField.addTextChangedListener {
             date = it.toString().trim().split(" ")

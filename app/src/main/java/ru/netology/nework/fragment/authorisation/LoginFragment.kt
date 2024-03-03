@@ -15,7 +15,7 @@ import ru.netology.nework.viewmodel.AuthViewModel
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
-    private lateinit var binding: FragmentLoginBinding
+
     private val authViewModel: AuthViewModel by activityViewModels()
 
     private var login = ""
@@ -25,17 +25,17 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentLoginBinding.inflate(inflater, container, false)
+        val binding = FragmentLoginBinding.inflate(inflater, container, false)
 
         binding.loginTextField.addTextChangedListener {
             login = it.toString().trim()
             binding.loginLayout.error = null
-            updateButtonState()
+            binding.buttonLogin.isChecked = login.isNotEmpty() && password.isNotEmpty()
         }
         binding.passwordTextField.addTextChangedListener {
             password = it.toString().trim()
             binding.passwordLayout.error = null
-            updateButtonState()
+            binding.buttonLogin.isChecked = login.isNotEmpty() && password.isNotEmpty()
         }
 
         binding.buttonLogin.setOnClickListener {
@@ -76,10 +76,6 @@ class LoginFragment : Fragment() {
         }
 
         return binding.root
-    }
-
-    private fun updateButtonState() {
-        binding.buttonLogin.isChecked = login.isNotEmpty() && password.isNotEmpty()
     }
 
 }

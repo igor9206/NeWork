@@ -32,7 +32,6 @@ import ru.netology.nework.viewmodel.PostViewModel
 
 @AndroidEntryPoint
 class PostsFragment : Fragment() {
-    private lateinit var binding: FragmentPostsBinding
     private val postViewModel: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
 
@@ -40,7 +39,7 @@ class PostsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentPostsBinding.inflate(inflater, container, false)
+        val binding = FragmentPostsBinding.inflate(inflater, container, false)
         val parentNavController = parentFragment?.parentFragment?.findNavController()
 
         var token: AuthModel? = null

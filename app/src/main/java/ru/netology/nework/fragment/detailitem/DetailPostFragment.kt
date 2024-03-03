@@ -24,7 +24,6 @@ import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class DetailPostFragment : Fragment() {
-    private lateinit var binding: FragmentDetailPostBinding
     private val postViewModel: PostViewModel by activityViewModels()
     private var player: ExoPlayer? = null
     private var placeMark: PlacemarkMapObject? = null
@@ -33,7 +32,7 @@ class DetailPostFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentDetailPostBinding.inflate(inflater, container, false)
+        val binding = FragmentDetailPostBinding.inflate(inflater, container, false)
 
 
         val imageProvider =

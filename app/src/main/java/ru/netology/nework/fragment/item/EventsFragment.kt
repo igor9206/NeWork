@@ -29,7 +29,6 @@ import ru.netology.nework.viewmodel.EventViewModel
 
 @AndroidEntryPoint
 class EventsFragment : Fragment() {
-    private lateinit var binding: FragmentEventsBinding
     private val eventViewModel: EventViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
 
@@ -37,7 +36,7 @@ class EventsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentEventsBinding.inflate(inflater, container, false)
+        val binding = FragmentEventsBinding.inflate(inflater, container, false)
         val parentNavController = parentFragment?.parentFragment?.findNavController()
 
         var token: AuthModel? = null

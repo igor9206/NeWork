@@ -21,7 +21,6 @@ import ru.netology.nework.viewmodel.AuthViewModel
 
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
-    private lateinit var binding: FragmentRegisterBinding
     private val authViewModel: AuthViewModel by activityViewModels()
 
     private var login = ""
@@ -56,7 +55,7 @@ class RegisterFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentRegisterBinding.inflate(inflater, container, false)
+        val binding = FragmentRegisterBinding.inflate(inflater, container, false)
 
 
         binding.pickPhoto.setOnClickListener {
@@ -85,24 +84,24 @@ class RegisterFragment : Fragment() {
         binding.loginTextField.addTextChangedListener {
             login = it.toString().trim()
             binding.loginLayout.error = null
-            updateButtonState()
+            binding.buttonLogin.isChecked = updateButtonState()
         }
         binding.nameTextField.addTextChangedListener {
             name = it.toString().trim()
             binding.nameLayout.error = null
-            updateButtonState()
+            binding.buttonLogin.isChecked = updateButtonState()
         }
         binding.passwordTextField.addTextChangedListener {
             password = it.toString().trim()
             binding.passLayout.error = null
             binding.repeatPassLayout.error = null
-            updateButtonState()
+            binding.buttonLogin.isChecked = updateButtonState()
         }
         binding.repeatPasswordTextField.addTextChangedListener {
             confirmPassword = it.toString().trim()
             binding.passLayout.error = null
             binding.repeatPassLayout.error = null
-            updateButtonState()
+            binding.buttonLogin.isChecked = updateButtonState()
         }
 
 
@@ -138,10 +137,9 @@ class RegisterFragment : Fragment() {
         return binding.root
     }
 
-    private fun updateButtonState() {
-        binding.buttonLogin.isChecked =
-            login.isNotEmpty() && name.isNotEmpty()
-                    && password.isNotEmpty() && confirmPassword.isNotEmpty()
+    private fun updateButtonState(): Boolean {
+        return login.isNotEmpty() && name.isNotEmpty()
+                && password.isNotEmpty() && confirmPassword.isNotEmpty()
     }
 
 

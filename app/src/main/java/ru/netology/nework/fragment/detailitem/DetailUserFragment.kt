@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.R
@@ -20,17 +22,19 @@ import ru.netology.nework.viewmodel.UserViewModel
 
 @AndroidEntryPoint
 class DetailUserFragment : Fragment() {
-    private lateinit var binding: FragmentDetailUserBinding
     private val userViewModel: UserViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
     private lateinit var pagerAdapter: PagerAdapter
+    private lateinit var tabLayout: TabLayout
+    private lateinit var pager: ViewPager2
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentDetailUserBinding.inflate(inflater, container, false)
-
+        val binding = FragmentDetailUserBinding.inflate(inflater, container, false)
+        tabLayout = binding.tabLayout
+        pager = binding.pager
 
         val userId = arguments?.getLong(AppKey.USER_ID)
         if (userId != null) {
@@ -77,7 +81,7 @@ class DetailUserFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
+        TabLayoutMediator(tabLayout, pager) { tab, position ->
             when (position) {
                 0 -> tab.text = getString(R.string.wall)
                 1 -> tab.text = getString(R.string.jobs)

@@ -20,7 +20,6 @@ import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class JobsFragment : Fragment() {
-    private lateinit var binding: FragmentJobsBinding
     private val jobViewModel: JobViewModel by viewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
 
@@ -28,7 +27,7 @@ class JobsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentJobsBinding.inflate(inflater, container, false)
+        val binding = FragmentJobsBinding.inflate(inflater, container, false)
 
         val userId = arguments?.getLong(AppKey.USER_ID)
         jobViewModel.getJobs(userId)

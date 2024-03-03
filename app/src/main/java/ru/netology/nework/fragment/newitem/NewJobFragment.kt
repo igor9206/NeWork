@@ -16,14 +16,13 @@ import ru.netology.nework.viewmodel.JobViewModel
 
 @AndroidEntryPoint
 class NewJobFragment : Fragment() {
-    private lateinit var binding: FragmentNewJobBinding
     private val jobViewModel: JobViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentNewJobBinding.inflate(inflater, container, false)
+        val binding = FragmentNewJobBinding.inflate(inflater, container, false)
 
         binding.topAppBar.setNavigationOnClickListener {
             findNavController().navigateUp()

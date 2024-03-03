@@ -18,14 +18,13 @@ import ru.netology.nework.viewmodel.AuthViewModel
 
 @AndroidEntryPoint
 class MainFragment : Fragment() {
-    private lateinit var binding: FragmentMainBinding
     private val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMainBinding.inflate(inflater, container, false)
+        val binding = FragmentMainBinding.inflate(inflater, container, false)
 
         var token: AuthModel? = null
         authViewModel.dataAuth.observe(viewLifecycleOwner) { state ->

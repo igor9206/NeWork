@@ -36,7 +36,6 @@ import java.io.File
 import java.io.FileOutputStream
 
 class NewPostFragment : Fragment() {
-    private lateinit var binding: FragmentNewPostBinding
     private val postViewModel: PostViewModel by activityViewModels()
     private var placeMark: PlacemarkMapObject? = null
     private val gson = Gson()
@@ -87,7 +86,7 @@ class NewPostFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentNewPostBinding.inflate(inflater, container, false)
+        val binding = FragmentNewPostBinding.inflate(inflater, container, false)
 
         val arg = arguments?.getString(AppKey.EDIT_POST)
         if (arg != null) {

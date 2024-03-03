@@ -33,7 +33,6 @@ import ru.netology.nework.util.AppKey
 import ru.netology.nework.viewmodel.EventViewModel
 
 class NewEventFragment : Fragment() {
-    private lateinit var binding: FragmentNewEventBinding
     private val eventViewModel: EventViewModel by activityViewModels()
     private val gson = Gson()
     private val pointToken = object : TypeToken<Point>() {}.type
@@ -84,7 +83,7 @@ class NewEventFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentNewEventBinding.inflate(inflater, container, false)
+        val binding = FragmentNewEventBinding.inflate(inflater, container, false)
 
         val arg = arguments?.getString(AppKey.EDIT_EVENT)
         if (arg != null) {

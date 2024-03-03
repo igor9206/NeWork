@@ -22,7 +22,6 @@ import ru.netology.nework.viewmodel.EventViewModel
 import java.time.format.DateTimeFormatter
 
 class DetailEventFragment : Fragment() {
-    private lateinit var binding: FragmentDetailEventBinding
     private val eventViewModel: EventViewModel by activityViewModels()
     private var player: ExoPlayer? = null
     private var placeMark: PlacemarkMapObject? = null
@@ -31,7 +30,7 @@ class DetailEventFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentDetailEventBinding.inflate(inflater, container, false)
+        val binding = FragmentDetailEventBinding.inflate(inflater, container, false)
 
         val imageProvider =
             ImageProvider.fromResource(requireContext(), R.drawable.ic_location_on_24)

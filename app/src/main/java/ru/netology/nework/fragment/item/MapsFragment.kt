@@ -16,6 +16,7 @@ import com.yandex.mapkit.layers.ObjectEvent
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.InputListener
 import com.yandex.mapkit.map.PlacemarkMapObject
+import com.yandex.mapkit.mapview.MapView
 import com.yandex.mapkit.user_location.UserLocationLayer
 import com.yandex.mapkit.user_location.UserLocationObjectListener
 import com.yandex.mapkit.user_location.UserLocationView
@@ -24,16 +25,17 @@ import ru.netology.nework.R
 import ru.netology.nework.databinding.FragmentMapsBinding
 
 class MapsFragment : Fragment(), UserLocationObjectListener {
-    private lateinit var binding: FragmentMapsBinding
     private lateinit var userLocation: UserLocationLayer
     private var placeMark: PlacemarkMapObject? = null
+    private lateinit var map: MapView
     private val gson = Gson()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMapsBinding.inflate(inflater, container, false)
+        val binding = FragmentMapsBinding.inflate(inflater, container, false)
+        map = binding.map
         MapKitFactory.initialize(requireContext())
 
         userLocation =
@@ -85,21 +87,21 @@ class MapsFragment : Fragment(), UserLocationObjectListener {
     override fun onStart() {
         super.onStart()
         MapKitFactory.getInstance().onStart()
-        binding.map.onStart()
+        map.onStart()
     }
 
     override fun onStop() {
-        binding.map.onStop()
+        map.onStop()
         MapKitFactory.getInstance().onStop()
         super.onStop()
     }
 
     override fun onObjectAdded(userLoactionView: UserLocationView) {
         userLocation.setAnchor(
-            PointF((binding.map.width * 0.5).toFloat(), (binding.map.height * 0.5).toFloat()),
-            PointF((binding.map.width * 0.5).toFloat(), (binding.map.height * 0.83).toFloat())
+            PointF((map.width * 0.5).toFloat(), (map.height * 0.5).toFloat()),
+            PointF((map.width * 0.5).toFloat(), (map.height * 0.83).toFloat())
         )
-        binding.map.mapWindow.map.move(
+        map.mapWindow.map.move(
             CameraPosition(userLoactionView.arrow.geometry, 17f, 0f, 0f)
         )
     }
