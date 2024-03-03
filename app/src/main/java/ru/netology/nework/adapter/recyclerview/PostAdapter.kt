@@ -61,25 +61,42 @@ class PostViewHolder(
             buttonLike.text = post.likeOwnerIds.size.toString()
             buttonLike.isChecked = post.likedByMe
 
-            imageContent.loadAttachment(post.attachment?.url)
-            imageContent.isVisible = post.attachment?.type == AttachmentType.IMAGE
+            fun setAttachmentVisibility(
+                imageContentVisible: Boolean = false,
+                videoContentVisible: Boolean = false,
+                audioContentVisible: Boolean = false,
+            ) {
+                imageContent.isVisible = imageContentVisible
+                videoContent.isVisible = videoContentVisible
+                audioContent.isVisible = audioContentVisible
+            }
 
-            videoContent.player =
-                if (post.attachment?.type == AttachmentType.VIDEO) {
-                    player = ExoPlayer.Builder(context).build()
-                    player!!.apply {
+            when (post.attachment?.type) {
+                AttachmentType.IMAGE -> {
+                    imageContent.loadAttachment(post.attachment.url)
+                    setAttachmentVisibility(imageContentVisible = true)
+                }
+
+                AttachmentType.VIDEO -> {
+                    player = ExoPlayer.Builder(context).build().apply {
                         setMediaItem(MediaItem.fromUri(post.attachment.url))
                     }
-                } else null
-            videoContent.isVisible = post.attachment?.type == AttachmentType.VIDEO
-
-            player = if (post.attachment?.type == AttachmentType.AUDIO) {
-                ExoPlayer.Builder(context).build().apply {
-                    setMediaItem(MediaItem.fromUri(post.attachment.url))
+                    videoContent.player = player
+                    setAttachmentVisibility(videoContentVisible = true)
                 }
-            } else null
 
-            audioContent.isVisible = post.attachment?.type == AttachmentType.AUDIO
+                AttachmentType.AUDIO -> {
+                    player = ExoPlayer.Builder(context).build().apply {
+                        setMediaItem(MediaItem.fromUri(post.attachment.url))
+                    }
+                    setAttachmentVisibility(audioContentVisible = true)
+                }
+
+                null -> {
+                    releasePlayer()
+                    setAttachmentVisibility()
+                }
+            }
 
             playPauseAudio.setOnClickListener {
                 if (player?.isPlaying == true) {
@@ -137,8 +154,14 @@ class PostViewHolder(
     }
 
     fun releasePlayer() {
+        player?.apply {
+            stop()
+            release()
+        }
+    }
+
+    fun stopPlayer(){
         player?.stop()
-        player?.release()
     }
 
 }

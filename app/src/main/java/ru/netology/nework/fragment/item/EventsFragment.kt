@@ -15,8 +15,10 @@ import androidx.paging.LoadState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import ru.netology.nework.R
 import ru.netology.nework.adapter.recyclerview.EventAdapter
+import ru.netology.nework.adapter.recyclerview.EventViewHolder
 import ru.netology.nework.adapter.tools.OnInteractionListener
 import ru.netology.nework.databinding.FragmentEventsBinding
 import ru.netology.nework.dto.Event
@@ -89,6 +91,20 @@ class EventsFragment : Fragment() {
             eventAdapter.loadStateFlow.collectLatest {
                 binding.swipeRefreshEvent.isRefreshing =
                     it.refresh is LoadState.Loading
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                suspendCancellableCoroutine {
+                    it.invokeOnCancellation {
+                        (0..<binding.recyclerViewEvent.childCount)
+                            .map(binding.recyclerViewEvent::getChildAt)
+                            .map(binding.recyclerViewEvent::getChildViewHolder)
+                            .filterIsInstance<EventViewHolder>()
+                            .onEach(EventViewHolder::stopPlayer)
+                    }
+                }
             }
         }
 

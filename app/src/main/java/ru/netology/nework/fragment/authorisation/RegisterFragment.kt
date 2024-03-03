@@ -46,7 +46,11 @@ class RegisterFragment : Fragment() {
                 }
 
                 else -> {
-                    Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.unknown_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -82,44 +86,63 @@ class RegisterFragment : Fragment() {
         }
 
         binding.loginTextField.addTextChangedListener {
-            login = it.toString().trim()
-            binding.loginLayout.error = null
-            binding.buttonLogin.isChecked = updateButtonState()
+            login = it.toString()
+            binding.apply {
+                loginLayout.error = null
+                buttonLogin.isChecked = updateButtonState()
+            }
         }
         binding.nameTextField.addTextChangedListener {
-            name = it.toString().trim()
-            binding.nameLayout.error = null
-            binding.buttonLogin.isChecked = updateButtonState()
+            name = it.toString()
+            binding.apply {
+                binding.nameLayout.error = null
+                binding.buttonLogin.isChecked = updateButtonState()
+            }
         }
         binding.passwordTextField.addTextChangedListener {
-            password = it.toString().trim()
+            password = it.toString()
             binding.passLayout.error = null
-            binding.repeatPassLayout.error = null
-            binding.buttonLogin.isChecked = updateButtonState()
+            binding.apply {
+                repeatPassLayout.error = null
+                buttonLogin.isChecked = updateButtonState()
+            }
         }
         binding.repeatPasswordTextField.addTextChangedListener {
-            confirmPassword = it.toString().trim()
-            binding.passLayout.error = null
-            binding.repeatPassLayout.error = null
-            binding.buttonLogin.isChecked = updateButtonState()
+            confirmPassword = it.toString()
+            binding.apply {
+                passLayout.error = null
+                repeatPassLayout.error = null
+                buttonLogin.isChecked = updateButtonState()
+            }
         }
 
 
         binding.buttonLogin.setOnClickListener {
+            login.trim()
+            name.trim()
+            password.trim()
+            confirmPassword.trim()
             val loginEmpty = login.isEmpty()
             val nameEmpty = name.isEmpty()
             val passwordsMatch = password == confirmPassword
             val passwordEmpty = password.isEmpty()
             val confirmPasswordEmpty = confirmPassword.isEmpty()
 
-            binding.loginLayout.error = if (loginEmpty) getString(R.string.empty_login) else null
-            binding.nameLayout.error = if (nameEmpty) getString(R.string.name_is_empty) else null
-            binding.passLayout.error = if (!passwordsMatch || passwordEmpty) {
-                if (passwordEmpty) getString(R.string.passwords_is_empty) else getString(R.string.passwords_dont_match)
-            } else null
-            binding.repeatPassLayout.error = if (!passwordsMatch || confirmPasswordEmpty) {
-                if (confirmPasswordEmpty) getString(R.string.passwords_is_empty) else getString(R.string.passwords_dont_match)
-            } else null
+            binding.apply {
+                loginLayout.error = if (loginEmpty) getString(R.string.empty_login) else null
+                nameLayout.error = if (nameEmpty) getString(R.string.name_is_empty) else null
+
+                passLayout.error = if (!passwordsMatch || passwordEmpty) {
+                    if (passwordEmpty) getString(R.string.passwords_is_empty) else getString(R.string.passwords_dont_match)
+                } else null
+
+                repeatPassLayout.error = if (!passwordsMatch || confirmPasswordEmpty) {
+                    if (confirmPasswordEmpty) getString(R.string.passwords_is_empty) else getString(
+                        R.string.passwords_dont_match
+                    )
+                } else null
+            }
+
 
             if (loginEmpty || nameEmpty || !passwordsMatch || passwordEmpty || confirmPasswordEmpty) {
                 return@setOnClickListener
@@ -141,6 +164,5 @@ class RegisterFragment : Fragment() {
         return login.isNotEmpty() && name.isNotEmpty()
                 && password.isNotEmpty() && confirmPassword.isNotEmpty()
     }
-
 
 }

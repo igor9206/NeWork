@@ -7,12 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.runtime.image.ImageProvider
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import ru.netology.nework.R
 import ru.netology.nework.databinding.FragmentDetailEventBinding
 import ru.netology.nework.dto.AttachmentType
@@ -41,33 +47,33 @@ class DetailEventFragment : Fragment() {
                 authorName.text = event.author
                 lastWork.text = event.authorJob ?: "In search work"
 
-                imageContent.isVisible = event.attachment?.type == AttachmentType.IMAGE
-                imageContent.loadAttachment(event.attachment?.url)
-
-                videoContent.isVisible = event.attachment?.type == AttachmentType.VIDEO
-                videoContent.player = if (event.attachment?.type == AttachmentType.VIDEO) {
-                    player = ExoPlayer.Builder(requireContext()).build()
-                    player!!.apply {
-                        setMediaItem(MediaItem.fromUri(event.attachment.url))
-                        prepare()
+                when (event.attachment?.type) {
+                    AttachmentType.IMAGE -> {
+                        imageContent.loadAttachment(event.attachment.url)
+                        imageContent.isVisible = true
                     }
-                } else null
 
-
-                audioContent.isVisible = event.attachment?.type == AttachmentType.AUDIO
-                player = if (event.attachment?.type == AttachmentType.AUDIO) {
-                    ExoPlayer.Builder(requireContext()).build().apply {
-                        setMediaItem(MediaItem.fromUri(event.attachment.url))
-                    }
-                } else null
-                playPauseAudio.setOnClickListener {
-                    if (player?.isPlaying == true) {
-                        player!!.playWhenReady = !player!!.playWhenReady
-                    } else {
-                        player?.apply {
-                            prepare()
-                            play()
+                    AttachmentType.VIDEO -> {
+                        player = ExoPlayer.Builder(requireContext()).build().apply {
+                            setMediaItem(MediaItem.fromUri(event.attachment.url))
                         }
+                        videoContent.player = player
+                        videoContent.isVisible = true
+                    }
+
+                    AttachmentType.AUDIO -> {
+                        player = ExoPlayer.Builder(requireContext()).build().apply {
+                            setMediaItem(MediaItem.fromUri(event.attachment.url))
+                        }
+                        videoContent.player = player
+                        audioContent.isVisible = true
+                    }
+
+                    null -> {
+                        imageContent.isVisible = false
+                        videoContent.isVisible = false
+                        audioContent.isVisible = false
+                        player?.release()
                     }
                 }
 
@@ -106,21 +112,36 @@ class DetailEventFragment : Fragment() {
                     placeMark = null
                 }
 
+                playPauseAudio.setOnClickListener {
+                    if (player?.isPlaying == true) {
+                        player!!.playWhenReady = !player!!.playWhenReady
+                    } else {
+                        player?.apply {
+                            prepare()
+                            play()
+                        }
+                    }
+                }
+
+                player?.addListener(object : Player.Listener {
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        binding.playPauseAudio.setIconResource(
+                            if (isPlaying) R.drawable.ic_pause_24 else R.drawable.ic_play_arrow_24
+                        )
+                    }
+                })
+
             }
         }
 
         return binding.root
     }
 
-
     override fun onStop() {
         super.onStop()
         player?.apply {
-            pause()
             stop()
-            release()
         }
-        player = null
     }
 
 }

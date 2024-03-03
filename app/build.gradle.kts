@@ -64,7 +64,7 @@ dependencies {
     val fragmentVersion = "1.6.2"
     val navVersion = "2.7.7"
     val recyclerViewVersion = "1.3.2"
-    val hiltVersion = "2.50"
+    val hiltVersion = "2.51"
     val gsonVersion = "2.10.1"
     val retrofitVersion = "2.9.0"
     val okhttpVersion = "4.12.0"

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
@@ -44,32 +45,33 @@ class DetailPostFragment : Fragment() {
                 authorName.text = post.author
                 lastWork.text = post.authorJob ?: "In search work"
 
-                imageContent.isVisible = post.attachment?.type == AttachmentType.IMAGE
-                imageContent.loadAttachment(post.attachment?.url)
-
-                videoContent.isVisible = post.attachment?.type == AttachmentType.VIDEO
-                videoContent.player = if (post.attachment?.type == AttachmentType.VIDEO) {
-                    player = ExoPlayer.Builder(requireContext()).build()
-                    player!!.apply {
-                        setMediaItem(MediaItem.fromUri(post.attachment.url))
-                        prepare()
+                when (post.attachment?.type) {
+                    AttachmentType.IMAGE -> {
+                        imageContent.loadAttachment(post.attachment.url)
+                        imageContent.isVisible = true
                     }
-                } else null
 
-                audioContent.isVisible = post.attachment?.type == AttachmentType.AUDIO
-                player = if (post.attachment?.type == AttachmentType.AUDIO) {
-                    ExoPlayer.Builder(requireContext()).build().apply {
-                        setMediaItem(MediaItem.fromUri(post.attachment.url))
-                    }
-                } else null
-                playPauseAudio.setOnClickListener {
-                    if (player?.isPlaying == true) {
-                        player!!.playWhenReady = !player!!.playWhenReady
-                    } else {
-                        player?.apply {
-                            prepare()
-                            play()
+                    AttachmentType.VIDEO -> {
+                        player = ExoPlayer.Builder(requireContext()).build().apply {
+                            setMediaItem(MediaItem.fromUri(post.attachment.url))
                         }
+                        videoContent.player = player
+                        videoContent.isVisible = true
+                    }
+
+                    AttachmentType.AUDIO -> {
+                        player = ExoPlayer.Builder(requireContext()).build().apply {
+                            setMediaItem(MediaItem.fromUri(post.attachment.url))
+                        }
+                        videoContent.player = player
+                        audioContent.isVisible = true
+                    }
+
+                    null -> {
+                        imageContent.isVisible = false
+                        videoContent.isVisible = false
+                        audioContent.isVisible = false
+                        player?.release()
                     }
                 }
 
@@ -104,6 +106,25 @@ class DetailPostFragment : Fragment() {
                 }
                 binding.map.isVisible = placeMark != null && point != null
 
+                playPauseAudio.setOnClickListener {
+                    if (player?.isPlaying == true) {
+                        player!!.playWhenReady = !player!!.playWhenReady
+                    } else {
+                        player?.apply {
+                            prepare()
+                            play()
+                        }
+                    }
+                }
+
+                player?.addListener(object : Player.Listener {
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        binding.playPauseAudio.setIconResource(
+                            if (isPlaying) R.drawable.ic_pause_24 else R.drawable.ic_play_arrow_24
+                        )
+                    }
+                })
+
             }
         }
 
@@ -113,11 +134,8 @@ class DetailPostFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         player?.apply {
-            pause()
             stop()
-            release()
         }
-        player = null
     }
 
 }

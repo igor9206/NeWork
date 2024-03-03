@@ -15,7 +15,6 @@ import ru.netology.nework.viewmodel.AuthViewModel
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
-
     private val authViewModel: AuthViewModel by activityViewModels()
 
     private var login = ""
@@ -28,21 +27,29 @@ class LoginFragment : Fragment() {
         val binding = FragmentLoginBinding.inflate(inflater, container, false)
 
         binding.loginTextField.addTextChangedListener {
-            login = it.toString().trim()
-            binding.loginLayout.error = null
-            binding.buttonLogin.isChecked = login.isNotEmpty() && password.isNotEmpty()
+            login = it.toString()
+            binding.apply {
+                loginLayout.error = null
+                buttonLogin.isChecked = updateStateButtonLogin()
+            }
         }
         binding.passwordTextField.addTextChangedListener {
-            password = it.toString().trim()
-            binding.passwordLayout.error = null
-            binding.buttonLogin.isChecked = login.isNotEmpty() && password.isNotEmpty()
+            password = it.toString()
+            binding.apply {
+                passwordLayout.error = null
+                buttonLogin.isChecked = updateStateButtonLogin()
+            }
         }
 
         binding.buttonLogin.setOnClickListener {
+            login.trim()
+            password.trim()
             when {
                 password.isEmpty() && login.isEmpty() -> {
-                    binding.loginLayout.error = getString(R.string.empty_login)
-                    binding.passwordLayout.error = getString(R.string.empty_password)
+                    binding.apply {
+                        loginLayout.error = getString(R.string.empty_login)
+                        passwordLayout.error = getString(R.string.empty_password)
+                    }
                 }
 
                 password.isEmpty() -> {
@@ -76,6 +83,10 @@ class LoginFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun updateStateButtonLogin(): Boolean {
+        return login.isNotEmpty() && password.isNotEmpty()
     }
 
 }

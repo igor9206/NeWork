@@ -8,10 +8,10 @@ import ru.netology.nework.dto.Coordinates
 import ru.netology.nework.dto.Event
 import ru.netology.nework.dto.EventType
 import ru.netology.nework.dto.UserPreview
-import ru.netology.nework.entity.post.AttachmentConverter
-import ru.netology.nework.entity.post.CoordsConverter
-import ru.netology.nework.entity.post.MentionIdsConverter
-import ru.netology.nework.entity.post.UsersConverter
+import ru.netology.nework.entity.converter.AttachmentConverter
+import ru.netology.nework.entity.converter.CoordsConverter
+import ru.netology.nework.entity.converter.MentionIdsConverter
+import ru.netology.nework.entity.converter.UsersConverter
 import java.time.OffsetDateTime
 
 @Entity(tableName = "eventEntity")

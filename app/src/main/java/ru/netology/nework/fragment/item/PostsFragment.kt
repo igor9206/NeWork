@@ -17,8 +17,10 @@ import androidx.paging.filter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import ru.netology.nework.R
 import ru.netology.nework.adapter.recyclerview.PostAdapter
+import ru.netology.nework.adapter.recyclerview.PostViewHolder
 import ru.netology.nework.adapter.tools.OnInteractionListener
 import ru.netology.nework.databinding.FragmentPostsBinding
 import ru.netology.nework.dto.FeedItem
@@ -98,6 +100,20 @@ class PostsFragment : Fragment() {
             postAdapter.loadStateFlow.collectLatest {
                 binding.swipeRefresh.isRefreshing =
                     it.refresh is LoadState.Loading
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                suspendCancellableCoroutine {
+                    it.invokeOnCancellation {
+                        (0..<binding.recyclerViewPost.childCount)
+                            .map(binding.recyclerViewPost::getChildAt)
+                            .map(binding.recyclerViewPost::getChildViewHolder)
+                            .filterIsInstance<PostViewHolder>()
+                            .onEach(PostViewHolder::stopPlayer)
+                    }
+                }
             }
         }
 
