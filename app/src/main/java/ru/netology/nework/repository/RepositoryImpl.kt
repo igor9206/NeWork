@@ -32,12 +32,16 @@ import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.entity.event.EventEntity
 import ru.netology.nework.entity.post.PostEntity
 import ru.netology.nework.entity.user.UserEntity
+import ru.netology.nework.error.ApiError
+import ru.netology.nework.error.NetworkError
+import ru.netology.nework.error.UnknownError
 import ru.netology.nework.model.AttachmentModel
 import ru.netology.nework.model.AuthModel
 import ru.netology.nework.repository.remotemediator.EventRemoteMediator
 import ru.netology.nework.repository.remotemediator.PostRemoteMediator
 import ru.netology.nework.repository.remotemediator.UserRemoteMediator
 import java.io.File
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -69,7 +73,7 @@ class RepositoryImpl @Inject constructor(
 
 
     override val dataEvent: Flow<PagingData<FeedItem>> = Pager(
-        config = PagingConfig(pageSize = 3, enablePlaceholders = false),
+        config = PagingConfig(pageSize = 4, enablePlaceholders = false),
         pagingSourceFactory = { eventDao.pagingSource() },
         remoteMediator = eventRemoteMediator
     ).flow
@@ -85,8 +89,7 @@ class RepositoryImpl @Inject constructor(
         it.map(UserEntity::toDto)
     }
 
-    private var jobs = listOf<Job>()
-    private val _dataJob = MutableLiveData(jobs)
+    private val _dataJob = MutableLiveData<List<Job>>()
     override val dataJob: LiveData<List<Job>> = _dataJob
 
     override suspend fun register(
@@ -117,15 +120,17 @@ class RepositoryImpl @Inject constructor(
                         toastMsg(context.getString(R.string.incorrect_photo_format))
                     }
 
-                    else -> toastMsg("${context.getString(R.string.unknown_error)}: ${response.code()}")
+                    else -> throw ApiError(response.code(), response.message())
                 }
                 return
             }
 
-            val body = response.body() ?: throw Exception("Body is Empty")
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
             appAuth.setAuth(body.id, body.token)
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            toastMsg("${context.getString(R.string.unknown_error)}: ${e.message}")
+            throw UnknownError
         }
     }
 
@@ -142,15 +147,17 @@ class RepositoryImpl @Inject constructor(
                         toastMsg(context.getString(R.string.user_unregistered))
                     }
 
-                    else -> toastMsg("${context.getString(R.string.unknown_error)}: ${response.code()}")
+                    else -> throw ApiError(response.code(), response.message())
                 }
                 return
             }
 
-            val body = response.body() ?: throw Exception("Body is Empty")
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
             appAuth.setAuth(body.id, body.token)
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            toastMsg("${context.getString(R.string.unknown_error)}: ${e.message}")
+            throw UnknownError
         }
     }
 
@@ -162,12 +169,14 @@ class RepositoryImpl @Inject constructor(
         try {
             val response = apiService.usersGetUser(id)
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
 
-            return response.body() ?: error(response.code())
+            return response.body() ?: throw ApiError(response.code(), response.message())
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -184,14 +193,16 @@ class RepositoryImpl @Inject constructor(
             }
 
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
 
-            val body = response.body() ?: error(response.code())
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
 
             postDao.insert(PostEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -199,13 +210,15 @@ class RepositoryImpl @Inject constructor(
         try {
             val response = apiService.postsSavePost(post)
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
 
-            val body = response.body() ?: error(response.code())
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
             postDao.insert(PostEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -213,9 +226,12 @@ class RepositoryImpl @Inject constructor(
         try {
             val mediaResponse = saveMedia(attachmentModel.file)
             if (!mediaResponse.isSuccessful) {
-                error(mediaResponse.code())
+                throw ApiError(mediaResponse.code(), mediaResponse.message())
             }
-            val media = mediaResponse.body() ?: error(mediaResponse.message())
+            val media = mediaResponse.body() ?: throw ApiError(
+                mediaResponse.code(),
+                mediaResponse.message()
+            )
 
             val response = apiService.postsSavePost(
                 post.copy(
@@ -225,15 +241,16 @@ class RepositoryImpl @Inject constructor(
                     )
                 )
             )
-
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
-
-            val body = response.body() ?: error(response.message())
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
             postDao.insert(PostEntity.fromDto(body))
+
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -246,26 +263,30 @@ class RepositoryImpl @Inject constructor(
         try {
             val response = apiService.postsDeletePost(id)
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
             postDao.deletePost(id)
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
     override suspend fun saveEvent(event: Event) {
-        println(event.id)
         try {
             val response = apiService.eventsSaveEvent(event)
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
 
-            val body = response.body() ?: error(response.code())
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+
             eventDao.insert(EventEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -273,9 +294,12 @@ class RepositoryImpl @Inject constructor(
         try {
             val mediaResponse = saveMedia(attachmentModel.file)
             if (!mediaResponse.isSuccessful) {
-                error(mediaResponse.code())
+                throw ApiError(mediaResponse.code(), mediaResponse.message())
             }
-            val media = mediaResponse.body() ?: error(mediaResponse.message())
+            val media = mediaResponse.body() ?: throw ApiError(
+                mediaResponse.code(),
+                mediaResponse.message()
+            )
 
             val response = apiService.eventsSaveEvent(
                 event.copy(
@@ -285,15 +309,16 @@ class RepositoryImpl @Inject constructor(
                     )
                 )
             )
-
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
 
-            val body = response.body() ?: error(response.message())
             eventDao.insert(EventEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -301,11 +326,14 @@ class RepositoryImpl @Inject constructor(
         try {
             val response = apiService.eventsDeleteEvent(id)
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
+
             eventDao.deleteEvent(id)
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -322,14 +350,16 @@ class RepositoryImpl @Inject constructor(
             }
 
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
 
-            val body = response.body() ?: error(response.code())
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
 
             eventDao.insert(EventEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -337,13 +367,15 @@ class RepositoryImpl @Inject constructor(
         try {
             val response = apiService.myJobGetAllJob()
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
-            val body = response.body() ?: error(response.message())
-            jobs = body
-            _dataJob.value = jobs
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+
+            _dataJob.value = body
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -351,13 +383,15 @@ class RepositoryImpl @Inject constructor(
         try {
             val response = apiService.jobsGetAllJob(userId)
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
-            val body = response.body() ?: error(response.message())
-            jobs = body
-            _dataJob.value = jobs
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+
+            _dataJob.value = body
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -365,13 +399,15 @@ class RepositoryImpl @Inject constructor(
         try {
             val response = apiService.myJobSaveJob(job)
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
-            val body = response.body() ?: error(response.message())
-            jobs = jobs + body
-            _dataJob.value = jobs
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+
+            _dataJob.value = _dataJob.value?.plus(body)
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 
@@ -379,12 +415,14 @@ class RepositoryImpl @Inject constructor(
         try {
             val response = apiService.myJobDeleteJob(id)
             if (!response.isSuccessful) {
-                error(response.code())
+                throw ApiError(response.code(), response.message())
             }
-            jobs = jobs.filter { it.id != id }
-            _dataJob.value = jobs
+
+            _dataJob.value = _dataJob.value?.filter { it.id != id }
+        } catch (e: IOException) {
+            throw NetworkError
         } catch (e: Exception) {
-            error(e)
+            throw UnknownError
         }
     }
 

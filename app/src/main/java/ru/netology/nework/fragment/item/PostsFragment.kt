@@ -1,9 +1,11 @@
 package ru.netology.nework.fragment.item
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -14,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.paging.filter
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -100,6 +103,16 @@ class PostsFragment : Fragment() {
             postAdapter.loadStateFlow.collectLatest {
                 binding.swipeRefresh.isRefreshing =
                     it.refresh is LoadState.Loading
+                if (it.append is LoadState.Error
+                    || it.prepend is LoadState.Error
+                    || it.refresh is LoadState.Error
+                ) {
+                    Snackbar.make(
+                        binding.root,
+                        R.string.connection_error,
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
             }
         }
 

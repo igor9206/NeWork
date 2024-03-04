@@ -7,9 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -18,12 +16,14 @@ import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.runtime.image.ImageProvider
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import ru.netology.nework.R
+import ru.netology.nework.adapter.recyclerview.AvatarAdapter
+import ru.netology.nework.adapter.tools.AvatarItemDecoration
 import ru.netology.nework.databinding.FragmentDetailEventBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.extension.loadAvatar
+import ru.netology.nework.model.InvolvedItemType
 import ru.netology.nework.viewmodel.EventViewModel
 import java.time.format.DateTimeFormatter
 
@@ -37,6 +37,24 @@ class DetailEventFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentDetailEventBinding.inflate(inflater, container, false)
+
+        val avatarDecoration = AvatarItemDecoration(64)
+        val speakersAdapter = AvatarAdapter()
+        val likersAdapter = AvatarAdapter()
+        val participantAdapter = AvatarAdapter()
+
+        binding.recyclerSpeaker.apply {
+            addItemDecoration(avatarDecoration)
+            adapter = speakersAdapter
+        }
+        binding.recyclerLikers.apply {
+            addItemDecoration(avatarDecoration)
+            adapter = likersAdapter
+        }
+        binding.recyclerParticipant.apply {
+            addItemDecoration(avatarDecoration)
+            adapter = participantAdapter
+        }
 
         val imageProvider =
             ImageProvider.fromResource(requireContext(), R.drawable.ic_location_on_24)
@@ -83,6 +101,21 @@ class DetailEventFragment : Fragment() {
                     event.datetime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
                         .toString()
                 content.text = event.content
+
+                lifecycleScope.launch {
+                    eventViewModel.getParticipants(event.speakerIds, InvolvedItemType.SPEAKERS)
+                }
+
+                lifecycleScope.launch {
+                    eventViewModel.getParticipants(event.likeOwnerIds, InvolvedItemType.LIKERS)
+                }
+
+                lifecycleScope.launch {
+                    eventViewModel.getParticipants(
+                        event.participantsIds,
+                        InvolvedItemType.PARTICIPANT
+                    )
+                }
 
                 buttonLike.isChecked = event.likedByMe
                 buttonLike.text = event.likeOwnerIds.size.toString()
@@ -134,6 +167,12 @@ class DetailEventFragment : Fragment() {
             }
         }
 
+        eventViewModel.involvedData.observe(viewLifecycleOwner) { involved ->
+            speakersAdapter.submitList(involved.speakers)
+            likersAdapter.submitList(involved.likers)
+            participantAdapter.submitList(involved.participants)
+        }
+
         return binding.root
     }
 
@@ -142,6 +181,7 @@ class DetailEventFragment : Fragment() {
         player?.apply {
             stop()
         }
+        eventViewModel.resetParticipantData()
     }
 
 }

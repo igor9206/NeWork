@@ -24,4 +24,7 @@ interface EventDao {
 
     @Query("DELETE FROM eventEntity")
     suspend fun clearAll()
+
+    @Query("SELECT COUNT(*) == 0 FROM eventEntity")
+    suspend fun isEmpty(): Boolean
 }

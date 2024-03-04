@@ -180,11 +180,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/speakers" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerSpeaker"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:src="@drawable/ic_account_circle_24" />
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/card_avatar" />
 
             </LinearLayout>
 
@@ -216,6 +218,15 @@
                     android:contentDescription="@string/button_like"
                     app:icon="@drawable/selector_like" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerLikers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/card_avatar" />
+
             </LinearLayout>
 
             <TextView
@@ -245,6 +256,15 @@
                     android:checkable="true"
                     android:contentDescription="@string/button_like"
                     app:icon="@drawable/ic_group_24" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerParticipant"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/card_avatar" />
 
             </LinearLayout>
 

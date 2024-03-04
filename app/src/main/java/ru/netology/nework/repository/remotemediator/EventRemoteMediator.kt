@@ -13,6 +13,7 @@ import ru.netology.nework.entity.KeyType
 import ru.netology.nework.entity.event.EventEntity
 import ru.netology.nework.entity.event.EventRemoteKeyEntity
 import ru.netology.nework.entity.event.toEntity
+import ru.netology.nework.error.ApiError
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,13 +26,28 @@ class EventRemoteMediator @Inject constructor(
     private val eventRemoteKeyDao: EventRemoteKeyDao,
 ) : RemoteMediator<Int, EventEntity>() {
 
+    override suspend fun initialize(): InitializeAction =
+        if (eventDao.isEmpty()) {
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        }
 
-    override suspend fun load(loadType: LoadType, state: PagingState<Int, EventEntity>): MediatorResult {
+
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, EventEntity>
+    ): MediatorResult {
 
         try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    apiService.eventsGetLatestPageEvent(state.config.pageSize)
+                    val id = eventRemoteKeyDao.max()
+                    if (id != null) {
+                        apiService.eventsGetAfterEvent(id, state.config.pageSize)
+                    } else {
+                        apiService.eventsGetLatestPageEvent(state.config.pageSize)
+                    }
                 }
 
                 LoadType.PREPEND -> {
@@ -46,56 +62,64 @@ class EventRemoteMediator @Inject constructor(
             }
 
             if (!response.isSuccessful) {
-                error(response)
+                throw ApiError(response.code(), response.message())
             }
 
             val body = response.body()
-                ?: error("Body is Empty: ${response.code()} + ${response.message()}")
+                ?: throw ApiError(response.code(), response.message())
 
-            appDb.withTransaction {
-                when (loadType) {
-                    LoadType.REFRESH -> {
-                        eventRemoteKeyDao.clear()
-                        eventRemoteKeyDao.insert(
-                            listOf(
+            if (body.isNotEmpty()) {
+                appDb.withTransaction {
+                    when (loadType) {
+                        LoadType.REFRESH -> {
+                            if (eventDao.isEmpty()) {
+                                eventRemoteKeyDao.insert(
+                                    listOf(
+                                        EventRemoteKeyEntity(
+                                            KeyType.AFTER,
+                                            body.first().id
+                                        ),
+                                        EventRemoteKeyEntity(
+                                            KeyType.BEFORE,
+                                            body.last().id
+                                        )
+                                    )
+                                )
+                            } else {
+                                eventRemoteKeyDao.insert(
+                                    EventRemoteKeyEntity(
+                                        KeyType.AFTER,
+                                        body.first().id
+                                    )
+                                )
+                            }
+                        }
+
+                        LoadType.PREPEND -> {
+                            eventRemoteKeyDao.insert(
                                 EventRemoteKeyEntity(
                                     KeyType.AFTER,
                                     body.first().id
-                                ),
+                                )
+                            )
+                        }
+
+                        LoadType.APPEND -> {
+                            eventRemoteKeyDao.insert(
                                 EventRemoteKeyEntity(
                                     KeyType.BEFORE,
                                     body.last().id
                                 )
                             )
-                        )
-                        eventDao.clearAll()
+                        }
                     }
 
-                    LoadType.PREPEND -> {
-                        eventRemoteKeyDao.insert(
-                            EventRemoteKeyEntity(
-                                KeyType.AFTER,
-                                body.first().id
-                            )
-                        )
-                    }
-
-                    LoadType.APPEND -> {
-                        eventRemoteKeyDao.insert(
-                            EventRemoteKeyEntity(
-                                KeyType.BEFORE,
-                                body.last().id
-                            )
-                        )
-                    }
+                    eventDao.insertAll(body.toEntity())
                 }
-
-                eventDao.insertAll(body.toEntity())
             }
 
-            return MediatorResult.Success(body.isEmpty())
+            return MediatorResult.Success(endOfPaginationReached = body.isEmpty())
         } catch (e: Exception) {
-            println("1 + ${e.message}")
             return MediatorResult.Error(e)
         }
     }

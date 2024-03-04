@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -91,6 +92,18 @@ class EventsFragment : Fragment() {
             eventAdapter.loadStateFlow.collectLatest {
                 binding.swipeRefreshEvent.isRefreshing =
                     it.refresh is LoadState.Loading
+
+                if (it.append is LoadState.Error
+                    || it.prepend is LoadState.Error
+                    || it.refresh is LoadState.Error
+                ) {
+                    Snackbar.make(
+                        binding.root,
+                        R.string.connection_error,
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+
             }
         }
 

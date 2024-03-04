@@ -41,4 +41,5 @@
     <string name="event">Event</string>
     <string name="speakers">Speakers</string>
     <string name="participants">Participants</string>
+    <string name="connection_error">Connection error</string>
 </resources>

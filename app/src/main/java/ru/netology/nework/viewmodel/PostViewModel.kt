@@ -112,7 +112,11 @@ class PostViewModel @Inject constructor(
     }
 
     fun like(post: Post) = viewModelScope.launch {
-        repository.like(post)
+        try {
+            repository.like(post)
+        }catch (e:Exception){
+            println(e)
+        }
     }
 
     fun edit(post: Post) {

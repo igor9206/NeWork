@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -77,6 +78,14 @@ class UsersFragment : Fragment() {
             userAdapter.loadStateFlow.collectLatest {
                 binding.swipeRefresh.isRefreshing =
                     it.refresh is LoadState.Loading
+
+                if (it.refresh is LoadState.Error) {
+                    Snackbar.make(
+                        binding.root,
+                        R.string.connection_error,
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
             }
         }
 

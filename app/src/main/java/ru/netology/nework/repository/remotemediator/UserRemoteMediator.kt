@@ -8,6 +8,7 @@ import ru.netology.nework.api.ApiService
 import ru.netology.nework.dao.user.UserDao
 import ru.netology.nework.entity.user.UserEntity
 import ru.netology.nework.entity.user.toEntity
+import ru.netology.nework.error.ApiError
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,21 +22,21 @@ class UserRemoteMediator @Inject constructor(
         loadType: LoadType,
         state: PagingState<Int, UserEntity>
     ): MediatorResult {
-        try {
+        return try {
             if (loadType == LoadType.REFRESH) {
                 val response = apiService.usersGetAllUser()
 
                 if (!response.isSuccessful) {
-                    error(response)
+                    throw ApiError(response.code(), response.message())
                 }
 
-                val body = response.body() ?: error(response.code())
+                val body = response.body() ?: throw ApiError(response.code(), response.message())
+
                 userDao.insertAll(body.toEntity())
             }
-            return MediatorResult.Success(true)
+            MediatorResult.Success(endOfPaginationReached = true)
         } catch (e: Exception) {
-            println("1 + ${e.message}")
-            return MediatorResult.Error(e)
+            MediatorResult.Error(e)
         }
 
     }
