@@ -64,7 +64,7 @@ class DetailEventFragment : Fragment() {
             with(binding) {
                 avatar.loadAvatar(event.authorAvatar)
                 authorName.text = event.author
-                lastWork.text = event.authorJob ?: "In search work"
+                lastWork.text = event.authorJob ?: getString(R.string.in_search_work)
 
                 when (event.attachment?.type) {
                     AttachmentType.IMAGE -> {

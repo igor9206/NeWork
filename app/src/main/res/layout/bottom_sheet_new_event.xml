@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-
     android:layout_height="wrap_content"
     tools:context=".fragment.dialog.BottomSheetNewEvent">
 
@@ -23,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="48dp"
-            android:hint="Date"
+            android:hint="@string/date"
             app:endIconDrawable="@drawable/ic_today_24"
             app:endIconMode="custom"
             app:helperText="MM/dd/yyyy HH:mm"
@@ -44,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="24dp"
-            android:text="Type"
+            android:text="@string/type"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textField" />
 
@@ -63,13 +62,13 @@
                 android:id="@+id/radioButtonOnline"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Online" />
+                android:text="@string/online" />
 
             <RadioButton
                 android:id="@+id/radioButtonOffline"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Offline" />
+                android:text="@string/offline" />
         </RadioGroup>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

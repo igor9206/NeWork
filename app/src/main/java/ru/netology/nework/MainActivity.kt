@@ -3,7 +3,6 @@ package ru.netology.nework
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.yandex.mapkit.MapKitFactory
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.databinding.ActivityMainBinding
 

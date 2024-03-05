@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import retrofit2.Response
 import ru.netology.nework.dto.Event
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Job

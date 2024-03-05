@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@android:color/transparent"
                 android:gravity="top"
-                android:hint="Whats news?"
+                android:hint="@string/whats_news"
                 android:inputType="textMultiLine"
                 tools:text="@tools:sample/lorem[100]" />
 
@@ -54,6 +54,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:adjustViewBounds="true"
+                    android:contentDescription="@string/image_content"
                     android:visibility="gone"
                     tools:src="@tools:sample/avatars"
                     tools:visibility="visible" />
@@ -66,7 +67,6 @@
                     android:text="@string/remove" />
 
             </FrameLayout>
-
 
 
             <FrameLayout
@@ -109,6 +109,7 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="16dp"
             android:background="?selectableItemBackground"
+            android:contentDescription="@string/button_add_photo"
             android:padding="4dp"
             android:src="@drawable/ic_photo_camera_24" />
 
@@ -118,6 +119,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginEnd="16dp"
+            android:contentDescription="@string/button_add_file"
             android:padding="4dp"
             android:src="@drawable/ic_attach_file_24" />
 
@@ -127,6 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginEnd="16dp"
+            android:contentDescription="@string/button_add_user"
             android:padding="4dp"
             android:src="@drawable/ic_group_24" />
 
@@ -136,6 +139,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginEnd="16dp"
+            android:contentDescription="@string/button_add_location"
             android:padding="4dp"
             android:src="@drawable/ic_location_pin_24" />
 

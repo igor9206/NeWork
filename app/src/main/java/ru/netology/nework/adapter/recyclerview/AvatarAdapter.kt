@@ -1,11 +1,9 @@
 package ru.netology.nework.adapter.recyclerview
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import ru.netology.nework.R
 import ru.netology.nework.adapter.tools.FeedItemCallBack
 import ru.netology.nework.databinding.CardAvatarBinding
@@ -19,7 +17,7 @@ class AvatarAdapter : ListAdapter<FeedItem, AvatarViewHolder>(FeedItemCallBack()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AvatarViewHolder {
         val binding = CardAvatarBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return AvatarViewHolder(binding, parent.context)
+        return AvatarViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: AvatarViewHolder, position: Int) {
@@ -40,7 +38,6 @@ class AvatarAdapter : ListAdapter<FeedItem, AvatarViewHolder>(FeedItemCallBack()
 
 class AvatarViewHolder(
     private val binding: CardAvatarBinding,
-    private val context: Context
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(user: UserResponse) {

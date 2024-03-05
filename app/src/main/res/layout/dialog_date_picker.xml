@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Select date"
+        android:text="@string/select_date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -18,8 +18,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:text="@string/enter_dates"
         android:textSize="28sp"
-        android:text="Enter dates"
         app:layout_constraintStart_toStartOf="@id/header"
         app:layout_constraintTop_toBottomOf="@id/header" />
 
@@ -27,6 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
+        android:contentDescription="@string/icon_calendar"
         android:src="@drawable/ic_today_24"
         app:layout_constraintBottom_toBottomOf="@id/message"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +47,7 @@
         android:layout_marginVertical="8dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="8dp"
-        android:hint="mm/dd/yyyy"
+        android:hint="@string/mm_dd_yyyy"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/dateFieldFinish"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,7 +67,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="24dp"
-        android:hint="End date"
+        android:hint="@string/end_date"
         app:layout_constraintBottom_toBottomOf="@id/dateFieldStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/dateFieldStart"

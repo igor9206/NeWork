@@ -13,15 +13,11 @@ import ru.netology.nework.R
 import ru.netology.nework.databinding.BottomSheetNewEventBinding
 import ru.netology.nework.dto.EventType
 import ru.netology.nework.viewmodel.EventViewModel
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
 import java.util.Locale
 
 class BottomSheetNewEvent : BottomSheetDialogFragment() {

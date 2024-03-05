@@ -61,7 +61,7 @@ class DetailPostFragment : Fragment() {
             with(binding) {
                 avatar.loadAvatar(post.authorAvatar)
                 authorName.text = post.author
-                lastWork.text = post.authorJob ?: "In search work"
+                lastWork.text = post.authorJob ?: getString(R.string.in_search_work)
 
                 when (post.attachment?.type) {
                     AttachmentType.IMAGE -> {

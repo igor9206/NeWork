@@ -160,7 +160,7 @@ class PostViewHolder(
         }
     }
 
-    fun stopPlayer(){
+    fun stopPlayer() {
         player?.stop()
     }
 

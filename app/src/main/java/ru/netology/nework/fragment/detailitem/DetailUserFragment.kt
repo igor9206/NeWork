@@ -42,7 +42,10 @@ class DetailUserFragment : Fragment() {
         }
 
 
-        binding.topAppBar.inflateMenu(if (userId == authViewModel.dataAuth.value?.id) R.menu.user_menu else R.menu.empty_menu)
+        binding.topAppBar.inflateMenu(
+            if (userId == authViewModel.dataAuth.value?.id) R.menu.user_menu
+            else R.menu.empty_menu
+        )
 
 
         binding.topAppBar.setOnMenuItemClickListener { menu ->

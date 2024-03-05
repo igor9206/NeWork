@@ -69,9 +69,7 @@ class EventsFragment : Fragment() {
                 )
             }
 
-            override fun selectUser(userResponse: UserResponse) {
-                TODO("Not yet implemented")
-            }
+            override fun selectUser(userResponse: UserResponse) {}
 
             override fun openCard(feedItem: FeedItem) {
                 eventViewModel.openEvent(feedItem as Event)

@@ -25,7 +25,8 @@ import java.util.Locale
 class NewJobFragment : Fragment() {
     private val jobViewModel: JobViewModel by activityViewModels()
     private val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.getDefault())
-    private val emptyOffsetDateTime = OffsetDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)
+    private val emptyOffsetDateTime =
+        OffsetDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)
 
     private var flagEmptyField = false
     var name = ""

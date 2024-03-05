@@ -60,7 +60,11 @@ class NewPostFragment : Fragment() {
                 }
 
                 else -> {
-                    Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.task_cancelled),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -71,7 +75,11 @@ class NewPostFragment : Fragment() {
                 val file = uri.toFile(requireContext())!!
                 val size = file.length()
                 if (size > 15728640) {
-                    Toast.makeText(requireContext(), "attachment > 15MB", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.attachment_15MB),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@registerForActivityResult
                 }
                 postViewModel.setAttachment(
@@ -158,10 +166,7 @@ class NewPostFragment : Fragment() {
                     binding.imageAttachment.isVisible = true
                     binding.imageAttachmentContainer.isVisible = true
                 }
-
-                AttachmentType.VIDEO -> {
-                    println(attachment.uri)
-                }
+                AttachmentType.VIDEO -> {}
 
                 AttachmentType.AUDIO -> {}
                 null -> {

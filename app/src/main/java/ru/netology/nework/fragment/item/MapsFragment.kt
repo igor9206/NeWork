@@ -23,6 +23,7 @@ import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.image.ImageProvider
 import ru.netology.nework.R
 import ru.netology.nework.databinding.FragmentMapsBinding
+import ru.netology.nework.util.AppKey
 
 class MapsFragment : Fragment(), UserLocationObjectListener {
     private lateinit var userLocation: UserLocationLayer
@@ -65,8 +66,8 @@ class MapsFragment : Fragment(), UserLocationObjectListener {
             when (item.itemId) {
                 R.id.save -> {
                     setFragmentResult(
-                        "mapsFragmentResult",
-                        bundleOf("point" to gson.toJson(placeMark?.geometry))
+                        AppKey.MAPS_FRAGMENT_RESULT,
+                        bundleOf(AppKey.MAP_POINT to gson.toJson(placeMark?.geometry))
                     )
                     findNavController().navigateUp()
                     true

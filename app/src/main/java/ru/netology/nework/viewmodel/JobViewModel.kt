@@ -7,14 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.netology.nework.dto.Job
 import ru.netology.nework.repository.Repository
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
