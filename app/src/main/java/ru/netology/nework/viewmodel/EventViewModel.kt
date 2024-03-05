@@ -159,6 +159,7 @@ class EventViewModel @Inject constructor(
         _editedEvent.value = _editedEvent.value?.copy(
             datetime = date
         )
+        println(_editedEvent.value)
     }
 
     fun setEventType(eventType: EventType) {
@@ -171,7 +172,7 @@ class EventViewModel @Inject constructor(
         eventData.value = event
     }
 
-    suspend fun getParticipants(involved: List<Long>, involvedItemType: InvolvedItemType) {
+    suspend fun getInvolved(involved: List<Long>, involvedItemType: InvolvedItemType) {
         val list = involved
             .let {
                 if (it.size > 4) it.take(5) else it
@@ -199,12 +200,14 @@ class EventViewModel @Inject constructor(
                         participants = list
                     )
                 }
+
+                else -> return
             }
         }
 
     }
 
-    fun resetParticipantData() {
+    fun resetInvolved() {
         involvedData.value = InvolvedItemModel()
     }
 }

@@ -24,5 +24,7 @@ data object DbError : AppError("error_db") {
 }
 
 data object UnknownError : AppError("error_unknown") {
-    private fun readResolve(): Any = UnknownError
+    private fun readResolve(): Any {
+        return "${UnknownError}: ${UnknownError.code} + ${UnknownError.message}"
+    }
 }

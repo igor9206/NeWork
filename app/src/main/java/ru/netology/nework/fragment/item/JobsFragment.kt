@@ -16,12 +16,15 @@ import ru.netology.nework.databinding.FragmentJobsBinding
 import ru.netology.nework.util.AppKey
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.JobViewModel
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class JobsFragment : Fragment() {
     private val jobViewModel: JobViewModel by viewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
+    private val emptyOffsetDateTime = OffsetDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +45,11 @@ class JobsFragment : Fragment() {
                     startFinish.text = buildString {
                         append(job.start.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
                         append(" - ")
-                        append(job.finish.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")))
+                        append(
+                            if (job.finish.year == emptyOffsetDateTime.year) getString(R.string.present_time) else job.finish.format(
+                                DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                            )
+                        )
                     }
                     position.text = job.position
 

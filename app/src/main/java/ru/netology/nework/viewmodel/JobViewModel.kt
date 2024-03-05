@@ -36,24 +36,17 @@ class JobViewModel @Inject constructor(
         name: String,
         position: String,
         link: String?,
-        startWork: String,
-        finishWork: String
+        startWork: OffsetDateTime,
+        finishWork: OffsetDateTime
     ) = viewModelScope.launch {
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu'T'HH:mm:ssXXX", Locale.getDefault())
         repository.saveJob(
             Job(
                 id = 0,
                 name = name,
                 position = position,
-                start = OffsetDateTime.parse(
-                    "${startWork}T00:00:00${OffsetDateTime.now().offset}",
-                    formatter
-                ),
-                finish = if (finishWork.isEmpty()) OffsetDateTime.now() else OffsetDateTime.parse(
-                    "${finishWork}T00:00:00${OffsetDateTime.now().offset}",
-                    formatter
-                ),
-                link = link
+                link = link,
+                start = startWork,
+                finish = finishWork,
             )
         )
     }

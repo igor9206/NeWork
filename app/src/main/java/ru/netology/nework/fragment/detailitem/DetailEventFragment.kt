@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.navigation.fragment.findNavController
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.PlacemarkMapObject
@@ -103,15 +104,15 @@ class DetailEventFragment : Fragment() {
                 content.text = event.content
 
                 lifecycleScope.launch {
-                    eventViewModel.getParticipants(event.speakerIds, InvolvedItemType.SPEAKERS)
+                    eventViewModel.getInvolved(event.speakerIds, InvolvedItemType.SPEAKERS)
                 }
 
                 lifecycleScope.launch {
-                    eventViewModel.getParticipants(event.likeOwnerIds, InvolvedItemType.LIKERS)
+                    eventViewModel.getInvolved(event.likeOwnerIds, InvolvedItemType.LIKERS)
                 }
 
                 lifecycleScope.launch {
-                    eventViewModel.getParticipants(
+                    eventViewModel.getInvolved(
                         event.participantsIds,
                         InvolvedItemType.PARTICIPANT
                     )
@@ -144,6 +145,7 @@ class DetailEventFragment : Fragment() {
                 } else {
                     placeMark = null
                 }
+                binding.map.isVisible = placeMark != null && point != null
 
                 playPauseAudio.setOnClickListener {
                     if (player?.isPlaying == true) {
@@ -173,6 +175,10 @@ class DetailEventFragment : Fragment() {
             participantAdapter.submitList(involved.participants)
         }
 
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
         return binding.root
     }
 
@@ -181,7 +187,7 @@ class DetailEventFragment : Fragment() {
         player?.apply {
             stop()
         }
-        eventViewModel.resetParticipantData()
+        eventViewModel.resetInvolved()
     }
 
 }

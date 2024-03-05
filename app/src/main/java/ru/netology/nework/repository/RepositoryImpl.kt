@@ -401,9 +401,9 @@ class RepositoryImpl @Inject constructor(
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
-            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            response.body() ?: throw ApiError(response.code(), response.message())
 
-            _dataJob.value = _dataJob.value?.plus(body)
+            getMyJobs()
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {

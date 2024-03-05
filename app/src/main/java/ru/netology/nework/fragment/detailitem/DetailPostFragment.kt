@@ -7,19 +7,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.navigation.fragment.findNavController
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.PlacemarkMapObject
 import com.yandex.runtime.image.ImageProvider
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import ru.netology.nework.R
+import ru.netology.nework.adapter.recyclerview.AvatarAdapter
+import ru.netology.nework.adapter.tools.AvatarItemDecoration
 import ru.netology.nework.databinding.FragmentDetailPostBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.extension.loadAvatar
+import ru.netology.nework.model.InvolvedItemType
 import ru.netology.nework.viewmodel.PostViewModel
 import java.time.format.DateTimeFormatter
 
@@ -35,6 +41,18 @@ class DetailPostFragment : Fragment() {
     ): View {
         val binding = FragmentDetailPostBinding.inflate(inflater, container, false)
 
+        val avatarDecoration = AvatarItemDecoration(64)
+        val likersAdapter = AvatarAdapter()
+        val mentionedAdapter = AvatarAdapter()
+
+        binding.recyclerLikers.apply {
+            addItemDecoration(avatarDecoration)
+            adapter = likersAdapter
+        }
+        binding.recyclerMentioned.apply {
+            addItemDecoration(avatarDecoration)
+            adapter = mentionedAdapter
+        }
 
         val imageProvider =
             ImageProvider.fromResource(requireContext(), R.drawable.ic_location_on_24)
@@ -78,6 +96,16 @@ class DetailPostFragment : Fragment() {
                 datePublished.text =
                     post.published.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
                 content.text = post.content
+
+                lifecycleScope.launch {
+                    postViewModel.getInvolved(post.likeOwnerIds, InvolvedItemType.LIKERS)
+                }
+
+                lifecycleScope.launch {
+                    postViewModel.getInvolved(post.mentionIds, InvolvedItemType.MENTIONED)
+                }
+
+
                 buttonLike.text = post.likeOwnerIds.size.toString()
                 buttonLike.isChecked = post.likedByMe
                 buttonMentioned.text = post.mentionIds.size.toString()
@@ -128,6 +156,15 @@ class DetailPostFragment : Fragment() {
             }
         }
 
+        postViewModel.involvedData.observe(viewLifecycleOwner) { involved ->
+            likersAdapter.submitList(involved.likers)
+            mentionedAdapter.submitList(involved.mentioned)
+        }
+
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
         return binding.root
     }
 
@@ -136,6 +173,7 @@ class DetailPostFragment : Fragment() {
         player?.apply {
             stop()
         }
+        postViewModel.resetInvolved()
     }
 
 }

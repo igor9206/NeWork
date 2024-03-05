@@ -11,6 +11,8 @@ import com.yandex.mapkit.geometry.Point
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
@@ -22,6 +24,8 @@ import ru.netology.nework.dto.Coordinates
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
 import ru.netology.nework.model.AttachmentModel
+import ru.netology.nework.model.InvolvedItemModel
+import ru.netology.nework.model.InvolvedItemType
 import ru.netology.nework.repository.Repository
 import java.io.File
 import java.time.OffsetDateTime
@@ -77,6 +81,8 @@ class PostViewModel @Inject constructor(
 
     val postData = MutableLiveData<Post>()
 
+    val involvedData = MutableLiveData(InvolvedItemModel())
+
     private val _attachmentData: MutableLiveData<AttachmentModel?> = MutableLiveData(null)
     val attachmentData: LiveData<AttachmentModel?>
         get() = _attachmentData
@@ -114,7 +120,7 @@ class PostViewModel @Inject constructor(
     fun like(post: Post) = viewModelScope.launch {
         try {
             repository.like(post)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             println(e)
         }
     }
@@ -153,6 +159,41 @@ class PostViewModel @Inject constructor(
 
     fun openPost(post: Post) {
         postData.value = post
+    }
+
+
+    suspend fun getInvolved(involved: List<Long>, involvedItemType: InvolvedItemType) {
+        val list = involved
+            .let {
+                if (it.size > 4) it.take(5) else it
+            }
+            .map {
+                viewModelScope.async { repository.getUser(it) }
+            }.awaitAll()
+
+        synchronized(involvedData) {
+            when (involvedItemType) {
+
+                InvolvedItemType.LIKERS -> {
+                    involvedData.value = involvedData.value?.copy(
+                        likers = list
+                    )
+                }
+
+                InvolvedItemType.MENTIONED -> {
+                    involvedData.value = involvedData.value?.copy(
+                        mentioned = list
+                    )
+                }
+
+                else -> return
+            }
+        }
+
+    }
+
+    fun resetInvolved() {
+        involvedData.value = InvolvedItemModel()
     }
 
 }

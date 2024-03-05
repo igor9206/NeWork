@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -13,10 +15,22 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.R
 import ru.netology.nework.databinding.FragmentNewJobBinding
 import ru.netology.nework.viewmodel.JobViewModel
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @AndroidEntryPoint
 class NewJobFragment : Fragment() {
     private val jobViewModel: JobViewModel by activityViewModels()
+    private val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.getDefault())
+    private val emptyOffsetDateTime = OffsetDateTime.of(1970, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)
+
+    private var flagEmptyField = false
+    var name = ""
+    var position = ""
+    var link = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,15 +42,76 @@ class NewJobFragment : Fragment() {
             findNavController().navigateUp()
         }
 
+        binding.nameTextField.addTextChangedListener {
+            name = it.toString()
+            flagEmptyField = false
+            binding.apply {
+                nameLayout.error = null
+                buttonJobCreate.isChecked = updateStateButtonLogin()
+            }
+        }
+        binding.positionTextField.addTextChangedListener {
+            position = it.toString()
+            flagEmptyField = false
+            binding.apply {
+                positionLayout.error = null
+                buttonJobCreate.isChecked = updateStateButtonLogin()
+            }
+        }
+        binding.linkTextField.addTextChangedListener {
+            link = it.toString()
+        }
 
         binding.buttonJobCreate.setOnClickListener {
-            val name = binding.nameTextField.text.toString()
-            val position = binding.positionTextField.text.toString()
-            val link = binding.linkTextField.text.toString()
+            name.trim()
+            position.trim()
+            link.trim()
+
+            if (name.isEmpty()) {
+                binding.nameLayout.error = getString(R.string.empty_field)
+                flagEmptyField = true
+            }
+            if (position.isEmpty()) {
+                binding.positionLayout.error = getString(R.string.empty_field)
+                flagEmptyField = true
+            }
+
+            if (flagEmptyField) {
+                return@setOnClickListener
+            }
+
             val startWork = binding.startWork.text.toString()
             val finishWork = binding.finishWork.text.toString()
-            jobViewModel.saveJob(name, position, link, startWork, finishWork)
-            findNavController().navigateUp()
+
+            try {
+                val dateStart = LocalDate.parse(startWork, formatter)
+                    .atTime(0, 0)
+                    .atOffset(ZoneOffset.UTC)
+                val dateFinish =
+                    if (finishWork == getString(R.string.present_time)) null else LocalDate.parse(
+                        finishWork,
+                        formatter
+                    )
+                        .atTime(0, 0)
+                        .atOffset(ZoneOffset.UTC)
+
+                jobViewModel.saveJob(
+                    name,
+                    position,
+                    link,
+                    dateStart,
+                    dateFinish ?: emptyOffsetDateTime
+                )
+                findNavController().navigateUp()
+
+            } catch (e: Exception) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.invalid_date_format),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
         }
 
         binding.datePicker.setOnClickListener {
@@ -46,18 +121,23 @@ class NewJobFragment : Fragment() {
             val dateFinish = dialogView.findViewById<TextInputEditText>(R.id.dateFinish)
             MaterialAlertDialogBuilder(requireContext())
                 .setView(dialogView)
-                .setPositiveButton("Ok") { _, _ ->
-                    binding.startWork.text = dateStart.text.toString()
+                .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                    binding.buttonJobCreate.isChecked = updateStateButtonLogin()
+                    binding.startWork.text = dateStart.text.toString().trim()
                     binding.finishWork.text =
-                        if (dateFinish.text!!.isEmpty()) null else dateFinish.text.toString()
+                        if (dateFinish.text!!.isEmpty())
+                            getString(R.string.present_time)
+                        else dateFinish.text.toString().trim()
                 }
-                .setNegativeButton("Cancel") { _, _ ->
-
-                }
+                .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
                 .show()
         }
 
         return binding.root
+    }
+
+    private fun updateStateButtonLogin(): Boolean {
+        return name.isNotEmpty() && position.isNotEmpty()
     }
 
 }
