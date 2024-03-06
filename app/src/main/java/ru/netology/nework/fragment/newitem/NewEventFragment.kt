@@ -29,7 +29,7 @@ import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.fragment.dialog.BottomSheetNewEvent
 import ru.netology.nework.util.AndroidUtils.focusAndShowKeyboard
-import ru.netology.nework.util.AppKey
+import ru.netology.nework.util.AppConst
 import ru.netology.nework.viewmodel.EventViewModel
 
 class NewEventFragment : Fragment() {
@@ -93,7 +93,7 @@ class NewEventFragment : Fragment() {
     ): View {
         val binding = FragmentNewEventBinding.inflate(inflater, container, false)
 
-        val arg = arguments?.getString(AppKey.EDIT_EVENT)
+        val arg = arguments?.getString(AppConst.EDIT_EVENT)
         if (arg != null) {
             binding.textEvent.setText(arg)
         }
@@ -136,8 +136,8 @@ class NewEventFragment : Fragment() {
             findNavController().navigate(R.id.action_newEventFragment_to_mapsFragment)
         }
 
-        setFragmentResultListener(AppKey.MAPS_FRAGMENT_RESULT) { _, bundle ->
-            val point = gson.fromJson<Point>(bundle.getString(AppKey.MAP_POINT), pointToken)
+        setFragmentResultListener(AppConst.MAPS_FRAGMENT_RESULT) { _, bundle ->
+            val point = gson.fromJson<Point>(bundle.getString(AppConst.MAP_POINT), pointToken)
             if (point != null) {
                 eventViewModel.setCoord(point)
             }
@@ -150,12 +150,12 @@ class NewEventFragment : Fragment() {
         binding.addUser.setOnClickListener {
             findNavController().navigate(
                 R.id.action_newEventFragment_to_usersFragment2,
-                bundleOf(AppKey.SELECT_USER to true)
+                bundleOf(AppConst.SELECT_USER to true)
             )
         }
-        setFragmentResultListener(AppKey.USERS_FRAGMENT_RESULT) { _, bundle ->
+        setFragmentResultListener(AppConst.USERS_FRAGMENT_RESULT) { _, bundle ->
             val selectedUsers =
-                gson.fromJson<List<Long>>(bundle.getString(AppKey.SELECT_USER), usersToken)
+                gson.fromJson<List<Long>>(bundle.getString(AppConst.SELECT_USER), usersToken)
             if (selectedUsers != null) {
                 eventViewModel.setMentionId(selectedUsers)
             }

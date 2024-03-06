@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -12,6 +13,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.navigation.fragment.findNavController
+import com.google.gson.Gson
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.PlacemarkMapObject
@@ -21,11 +23,14 @@ import kotlinx.coroutines.launch
 import ru.netology.nework.R
 import ru.netology.nework.adapter.recyclerview.AvatarAdapter
 import ru.netology.nework.adapter.tools.AvatarItemDecoration
+import ru.netology.nework.adapter.tools.InvolvedOnClickListener
 import ru.netology.nework.databinding.FragmentDetailPostBinding
 import ru.netology.nework.dto.AttachmentType
+import ru.netology.nework.dto.Post
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.extension.loadAvatar
 import ru.netology.nework.model.InvolvedItemType
+import ru.netology.nework.util.AppConst
 import ru.netology.nework.viewmodel.PostViewModel
 import java.time.format.DateTimeFormatter
 
@@ -34,6 +39,7 @@ class DetailPostFragment : Fragment() {
     private val postViewModel: PostViewModel by activityViewModels()
     private var player: ExoPlayer? = null
     private var placeMark: PlacemarkMapObject? = null
+    private val gson = Gson()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,9 +47,26 @@ class DetailPostFragment : Fragment() {
     ): View {
         val binding = FragmentDetailPostBinding.inflate(inflater, container, false)
 
+        var post: Post? = null
+
         val avatarDecoration = AvatarItemDecoration(64)
-        val likersAdapter = AvatarAdapter()
-        val mentionedAdapter = AvatarAdapter()
+
+        val likersAdapter = AvatarAdapter(object : InvolvedOnClickListener {
+            override fun openList() {
+                findNavController().navigate(
+                    R.id.usersFragment2,
+                    bundleOf(AppConst.LIKERS to gson.toJson(post?.likeOwnerIds))
+                )
+            }
+        })
+        val mentionedAdapter = AvatarAdapter(object : InvolvedOnClickListener {
+            override fun openList() {
+                findNavController().navigate(
+                    R.id.usersFragment2,
+                    bundleOf(AppConst.MENTIONED to gson.toJson(post?.mentionIds))
+                )
+            }
+        })
 
         binding.recyclerLikers.apply {
             addItemDecoration(avatarDecoration)
@@ -57,21 +80,22 @@ class DetailPostFragment : Fragment() {
         val imageProvider =
             ImageProvider.fromResource(requireContext(), R.drawable.ic_location_on_24)
 
-        postViewModel.postData.observe(viewLifecycleOwner) { post ->
+        postViewModel.postData.observe(viewLifecycleOwner) { postItem ->
+            post = postItem
             with(binding) {
-                avatar.loadAvatar(post.authorAvatar)
-                authorName.text = post.author
-                lastWork.text = post.authorJob ?: getString(R.string.in_search_work)
+                avatar.loadAvatar(postItem.authorAvatar)
+                authorName.text = postItem.author
+                lastWork.text = postItem.authorJob ?: getString(R.string.in_search_work)
 
-                when (post.attachment?.type) {
+                when (postItem.attachment?.type) {
                     AttachmentType.IMAGE -> {
-                        imageContent.loadAttachment(post.attachment.url)
+                        imageContent.loadAttachment(postItem.attachment.url)
                         imageContent.isVisible = true
                     }
 
                     AttachmentType.VIDEO -> {
                         player = ExoPlayer.Builder(requireContext()).build().apply {
-                            setMediaItem(MediaItem.fromUri(post.attachment.url))
+                            setMediaItem(MediaItem.fromUri(postItem.attachment.url))
                         }
                         videoContent.player = player
                         videoContent.isVisible = true
@@ -79,7 +103,7 @@ class DetailPostFragment : Fragment() {
 
                     AttachmentType.AUDIO -> {
                         player = ExoPlayer.Builder(requireContext()).build().apply {
-                            setMediaItem(MediaItem.fromUri(post.attachment.url))
+                            setMediaItem(MediaItem.fromUri(postItem.attachment.url))
                         }
                         videoContent.player = player
                         audioContent.isVisible = true
@@ -94,24 +118,27 @@ class DetailPostFragment : Fragment() {
                 }
 
                 datePublished.text =
-                    post.published.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
-                content.text = post.content
+                    postItem.published.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+                content.text = postItem.content
 
                 lifecycleScope.launch {
-                    postViewModel.getInvolved(post.likeOwnerIds, InvolvedItemType.LIKERS)
+                    postViewModel.getInvolved(postItem.likeOwnerIds, InvolvedItemType.LIKERS)
                 }
 
                 lifecycleScope.launch {
-                    postViewModel.getInvolved(post.mentionIds, InvolvedItemType.MENTIONED)
+                    postViewModel.getInvolved(postItem.mentionIds, InvolvedItemType.MENTIONED)
                 }
 
 
-                buttonLike.text = post.likeOwnerIds.size.toString()
-                buttonLike.isChecked = post.likedByMe
-                buttonMentioned.text = post.mentionIds.size.toString()
+                buttonLike.text = postItem.likeOwnerIds.size.toString()
+                buttonLike.isChecked = postItem.likedByMe
+                buttonMentioned.text = postItem.mentionIds.size.toString()
 
                 val point =
-                    if (post.coords != null) Point(post.coords.lat, post.coords.long) else null
+                    if (postItem.coords != null) Point(
+                        postItem.coords.lat,
+                        postItem.coords.long
+                    ) else null
                 if (point != null) {
                     if (placeMark == null) {
                         placeMark = binding.map.mapWindow.map.mapObjects.addPlacemark()

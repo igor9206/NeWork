@@ -6,18 +6,21 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nework.R
 import ru.netology.nework.adapter.tools.FeedItemCallBack
+import ru.netology.nework.adapter.tools.InvolvedOnClickListener
 import ru.netology.nework.databinding.CardAvatarBinding
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.extension.loadAvatar
 
 
-class AvatarAdapter : ListAdapter<FeedItem, AvatarViewHolder>(FeedItemCallBack()) {
+class AvatarAdapter(
+    private val involvedOnClickListener: InvolvedOnClickListener
+) : ListAdapter<FeedItem, AvatarViewHolder>(FeedItemCallBack()) {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AvatarViewHolder {
         val binding = CardAvatarBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return AvatarViewHolder(binding)
+        return AvatarViewHolder(binding, involvedOnClickListener)
     }
 
     override fun onBindViewHolder(holder: AvatarViewHolder, position: Int) {
@@ -38,6 +41,7 @@ class AvatarAdapter : ListAdapter<FeedItem, AvatarViewHolder>(FeedItemCallBack()
 
 class AvatarViewHolder(
     private val binding: CardAvatarBinding,
+    private val involvedOnClickListener: InvolvedOnClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(user: UserResponse) {
@@ -46,6 +50,10 @@ class AvatarViewHolder(
 
     fun addButton() {
         binding.avatar.setImageResource(R.drawable.ic_add_circle_48)
+        binding.avatar.isClickable = true
+        binding.avatar.setOnClickListener {
+            involvedOnClickListener.openList()
+        }
     }
 
 }

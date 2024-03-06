@@ -1,7 +1,10 @@
 package ru.netology.nework.util
 
-object AppKey {
-    const val POST_ID = "postId"
+object AppConst {
+    const val MENTIONED = "mentioned"
+    const val SPEAKERS = "speakers"
+    const val LIKERS = "likers"
+    const val PARTICIPANT = "participants"
     const val USERS_FRAGMENT_RESULT = "usersFragmentResult"
     const val SELECT_USER = "selectUser"
     const val MAP_POINT = "point"

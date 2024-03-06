@@ -2,9 +2,13 @@ package ru.netology.nework.fragment.item
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -14,8 +18,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import androidx.paging.filter
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -25,13 +31,14 @@ import ru.netology.nework.adapter.tools.OnInteractionListener
 import ru.netology.nework.databinding.FragmentUsersBinding
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.UserResponse
-import ru.netology.nework.util.AppKey
+import ru.netology.nework.util.AppConst
 import ru.netology.nework.viewmodel.UserViewModel
 
 @AndroidEntryPoint
 class UsersFragment : Fragment() {
     private val userViewModel: UserViewModel by activityViewModels()
     private val gson = Gson()
+    private val typeToken = object : TypeToken<List<Long>>() {}.type
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +47,32 @@ class UsersFragment : Fragment() {
         val binding = FragmentUsersBinding.inflate(inflater, container, false)
         val parentNavController = parentFragment?.parentFragment?.findNavController()
 
-        val arg = arguments?.getBoolean(AppKey.SELECT_USER) ?: false
+        val arg = arguments?.getBoolean(AppConst.SELECT_USER) ?: false
         val selectedUsers = mutableListOf<Long>()
+
+        val involved = when {
+            arguments?.containsKey(AppConst.SPEAKERS) == true -> {
+                binding.topAppBar.title = getString(R.string.speakers)
+                gson.fromJson<List<Long>>(arguments?.getString(AppConst.SPEAKERS), typeToken)
+            }
+
+            arguments?.containsKey(AppConst.LIKERS) == true -> {
+                binding.topAppBar.title = getString(R.string.likers)
+                gson.fromJson<List<Long>>(arguments?.getString(AppConst.LIKERS), typeToken)
+            }
+
+            arguments?.containsKey(AppConst.PARTICIPANT) == true -> {
+                binding.topAppBar.title = getString(R.string.participants)
+                gson.fromJson<List<Long>>(arguments?.getString(AppConst.PARTICIPANT), typeToken)
+            }
+
+            arguments?.containsKey(AppConst.MENTIONED) == true -> {
+                binding.topAppBar.title = getString(R.string.mentioned)
+                gson.fromJson<List<Long>>(arguments?.getString(AppConst.MENTIONED), typeToken)
+            }
+
+            else -> null
+        }
 
         val userAdapter = UserAdapter(object : OnInteractionListener {
             override fun like(feedItem: FeedItem) {}
@@ -59,7 +90,7 @@ class UsersFragment : Fragment() {
             override fun openCard(feedItem: FeedItem) {
                 parentNavController?.navigate(
                     R.id.action_mainFragment_to_detailUserFragment,
-                    bundleOf(AppKey.USER_ID to feedItem.id)
+                    bundleOf(AppConst.USER_ID to feedItem.id)
                 )
             }
 
@@ -69,7 +100,14 @@ class UsersFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 userViewModel.dataUsers.collectLatest {
-                    userAdapter.submitData(it)
+                    if (involved != null) {
+                        userAdapter.submitData(
+                            it.filter { item ->
+                                item.id in involved
+                            })
+                    } else {
+                        userAdapter.submitData(it)
+                    }
                 }
             }
         }
@@ -93,21 +131,33 @@ class UsersFragment : Fragment() {
             userAdapter.refresh()
         }
 
-        binding.topAppBar.isVisible = arg
-        binding.topAppBar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.save -> {
-                    setFragmentResult(
-                        AppKey.USERS_FRAGMENT_RESULT,
-                        bundleOf(AppKey.SELECT_USER to gson.toJson(selectedUsers))
-                    )
-                    findNavController().navigateUp()
-                    true
+        binding.topAppBar.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                when {
+                    arg -> {
+                        menuInflater.inflate(R.menu.new_post_menu, menu)
+                        binding.topAppBar.title = AppConst.SELECT_USER
+                    }
                 }
-
-                else -> false
             }
-        }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.save -> {
+                        setFragmentResult(
+                            AppConst.USERS_FRAGMENT_RESULT,
+                            bundleOf(AppConst.SELECT_USER to gson.toJson(selectedUsers))
+                        )
+                        findNavController().navigateUp()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        })
+
+        binding.topAppBar.isVisible = arg || involved != null
 
         binding.topAppBar.setNavigationOnClickListener {
             findNavController().navigateUp()

@@ -30,7 +30,7 @@ import ru.netology.nework.databinding.FragmentNewPostBinding
 import ru.netology.nework.dto.AttachmentType
 import ru.netology.nework.extension.loadAttachment
 import ru.netology.nework.util.AndroidUtils.focusAndShowKeyboard
-import ru.netology.nework.util.AppKey
+import ru.netology.nework.util.AppConst
 import ru.netology.nework.viewmodel.PostViewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -96,7 +96,7 @@ class NewPostFragment : Fragment() {
     ): View {
         val binding = FragmentNewPostBinding.inflate(inflater, container, false)
 
-        val arg = arguments?.getString(AppKey.EDIT_POST)
+        val arg = arguments?.getString(AppConst.EDIT_POST)
         if (arg != null) {
             binding.textPost.setText(arg)
         }
@@ -133,8 +133,8 @@ class NewPostFragment : Fragment() {
         binding.addLocation.setOnClickListener {
             findNavController().navigate(R.id.action_newPostFragment_to_mapsFragment)
         }
-        setFragmentResultListener(AppKey.MAPS_FRAGMENT_RESULT) { _, bundle ->
-            val point = gson.fromJson<Point>(bundle.getString(AppKey.MAP_POINT), pointToken)
+        setFragmentResultListener(AppConst.MAPS_FRAGMENT_RESULT) { _, bundle ->
+            val point = gson.fromJson<Point>(bundle.getString(AppConst.MAP_POINT), pointToken)
             if (point != null) {
                 postViewModel.setCoord(point)
             }
@@ -147,12 +147,12 @@ class NewPostFragment : Fragment() {
         binding.addUsers.setOnClickListener {
             findNavController().navigate(
                 R.id.action_newPostFragment_to_usersFragment2,
-                bundleOf(AppKey.SELECT_USER to true)
+                bundleOf(AppConst.SELECT_USER to true)
             )
         }
-        setFragmentResultListener(AppKey.USERS_FRAGMENT_RESULT) { _, bundle ->
+        setFragmentResultListener(AppConst.USERS_FRAGMENT_RESULT) { _, bundle ->
             val selectedUsers =
-                gson.fromJson<List<Long>>(bundle.getString(AppKey.SELECT_USER), usersToken)
+                gson.fromJson<List<Long>>(bundle.getString(AppConst.SELECT_USER), usersToken)
             if (selectedUsers != null) {
                 postViewModel.setMentionId(selectedUsers)
             }

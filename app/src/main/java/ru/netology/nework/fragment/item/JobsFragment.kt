@@ -13,7 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.R
 import ru.netology.nework.databinding.CardJobBinding
 import ru.netology.nework.databinding.FragmentJobsBinding
-import ru.netology.nework.util.AppKey
+import ru.netology.nework.util.AppConst
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.JobViewModel
 import java.time.OffsetDateTime
@@ -32,7 +32,7 @@ class JobsFragment : Fragment() {
     ): View {
         val binding = FragmentJobsBinding.inflate(inflater, container, false)
 
-        val userId = arguments?.getLong(AppKey.USER_ID)
+        val userId = arguments?.getLong(AppConst.USER_ID)
         jobViewModel.getJobs(userId)
 
         binding.buttonNewJob.isVisible = userId == authViewModel.dataAuth.value?.id

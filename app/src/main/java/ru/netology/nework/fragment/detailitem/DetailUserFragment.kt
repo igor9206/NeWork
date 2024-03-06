@@ -15,7 +15,7 @@ import ru.netology.nework.R
 import ru.netology.nework.adapter.viewpager.PagerAdapter
 import ru.netology.nework.databinding.FragmentDetailUserBinding
 import ru.netology.nework.extension.loadAvatar
-import ru.netology.nework.util.AppKey
+import ru.netology.nework.util.AppConst
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.UserViewModel
 
@@ -36,7 +36,7 @@ class DetailUserFragment : Fragment() {
         tabLayout = binding.tabLayout
         pager = binding.pager
 
-        val userId = arguments?.getLong(AppKey.USER_ID)
+        val userId = arguments?.getLong(AppConst.USER_ID)
         if (userId != null) {
             userViewModel.getUser(userId)
         }

@@ -1,11 +1,9 @@
 package ru.netology.nework.fragment.item
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -30,7 +28,7 @@ import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.Post
 import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.model.AuthModel
-import ru.netology.nework.util.AppKey
+import ru.netology.nework.util.AppConst
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.PostViewModel
 
@@ -52,7 +50,7 @@ class PostsFragment : Fragment() {
             token = state
         }
 
-        val userId = arguments?.getLong(AppKey.USER_ID)
+        val userId = arguments?.getLong(AppConst.USER_ID)
 
         val postAdapter = PostAdapter(object : OnInteractionListener {
             override fun like(feedItem: FeedItem) {
@@ -72,7 +70,7 @@ class PostsFragment : Fragment() {
                 postViewModel.edit(feedItem)
                 parentNavController?.navigate(
                     R.id.action_mainFragment_to_newPostFragment,
-                    bundleOf(AppKey.EDIT_POST to feedItem.content)
+                    bundleOf(AppConst.EDIT_POST to feedItem.content)
                 )
             }
 

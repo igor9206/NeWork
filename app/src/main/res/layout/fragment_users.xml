@@ -13,9 +13,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/new_post_menu"
         app:navigationIcon="@drawable/ic_arrow_back_24"
-        app:title="Selected Users"
         tools:visibility="visible" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

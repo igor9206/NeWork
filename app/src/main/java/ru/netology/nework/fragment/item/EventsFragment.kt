@@ -26,7 +26,7 @@ import ru.netology.nework.dto.Event
 import ru.netology.nework.dto.FeedItem
 import ru.netology.nework.dto.UserResponse
 import ru.netology.nework.model.AuthModel
-import ru.netology.nework.util.AppKey
+import ru.netology.nework.util.AppConst
 import ru.netology.nework.viewmodel.AuthViewModel
 import ru.netology.nework.viewmodel.EventViewModel
 
@@ -65,7 +65,7 @@ class EventsFragment : Fragment() {
                 eventViewModel.edit(feedItem)
                 parentNavController?.navigate(
                     R.id.action_mainFragment_to_newEventFragment,
-                    bundleOf(AppKey.EDIT_EVENT to feedItem.content)
+                    bundleOf(AppConst.EDIT_EVENT to feedItem.content)
                 )
             }
 

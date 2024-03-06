@@ -14,7 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.R
 import ru.netology.nework.databinding.FragmentMainBinding
 import ru.netology.nework.model.AuthModel
-import ru.netology.nework.util.AppKey
+import ru.netology.nework.util.AppConst
 import ru.netology.nework.viewmodel.AuthViewModel
 
 @AndroidEntryPoint
@@ -44,7 +44,7 @@ class MainFragment : Fragment() {
                     if (token?.id != 0L && token?.id.toString().isNotEmpty()) {
                         findNavController().navigate(
                             R.id.action_mainFragment_to_detailUserFragment,
-                            bundleOf(AppKey.USER_ID to token?.id)
+                            bundleOf(AppConst.USER_ID to token?.id)
                         )
                     } else {
                         findNavController().navigate(R.id.action_mainFragment_to_loginFragment)

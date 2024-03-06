@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import ru.netology.nework.fragment.item.JobsFragment
 import ru.netology.nework.fragment.item.PostsFragment
-import ru.netology.nework.util.AppKey
+import ru.netology.nework.util.AppConst
 
 class PagerAdapter(fragment: Fragment, private val userId: Long?) : FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int {
@@ -16,13 +16,13 @@ class PagerAdapter(fragment: Fragment, private val userId: Long?) : FragmentStat
         return when (position) {
             0 -> {
                 PostsFragment().apply {
-                    arguments = bundleOf(AppKey.USER_ID to userId)
+                    arguments = bundleOf(AppConst.USER_ID to userId)
                 }
             }
 
             1 -> {
                 JobsFragment.newInstance().apply {
-                    arguments = bundleOf(AppKey.USER_ID to userId)
+                    arguments = bundleOf(AppConst.USER_ID to userId)
                 }
             }
 
